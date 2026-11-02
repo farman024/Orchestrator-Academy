@@ -49,6 +49,6 @@ Single file — everything (CSS, data, logic) lives in `index.html`:
 - **v1.3 (Nov 1)** — JSON backup/restore, daily study reminder + idle nudges, animation system
 
 ## Credits
-Built from the flagship **AI Orchestration** live course by **Outskill** (https://outskill.com)
-— every lesson, prompt and framework comes from that workshop, distilled into this
-gamified, fully offline study companion.
+Based on the flagship **AI Orchestration** live workshop by **Outskill**, hosted by
+**Vaibhav Sisinty** (founder, Outskill) — every lesson, prompt and framework comes from
+that workshop, distilled into this gamified, fully offline study companion.

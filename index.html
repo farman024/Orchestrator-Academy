@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orchestrator Academy — Learn AI Orchestration, Gamified</title>
+<style>
+:root{
+  --bg:#0b0e14; --panel:#131826; --panel2:#1a2133; --line:#252e45;
+  --text:#e8ecf5; --muted:#8b94ab; --acc:#7c5cff; --acc2:#00d4b8;
+  --gold:#ffc93c; --red:#ff5d7a; --green:#3ddc84;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.55;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none}
+a{color:var(--acc2)}
+
+header{position:sticky;top:0;z-index:50;background:rgba(11,14,20,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:17px;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.logo .orb{width:24px;height:24px;border-radius:50%;background:conic-gradient(from 40deg,var(--acc),var(--acc2),var(--gold),var(--acc));box-shadow:0 0 14px rgba(124,92,255,.55)}
+.hud{display:flex;align-items:center;gap:14px;margin-left:auto;flex-wrap:wrap}
+.hud-item{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.hud-item b{color:var(--text);font-size:15px}
+.xp-track{width:170px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;height:16px;position:relative;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));width:0;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.xp-label{position:absolute;inset:0;font-size:10px;display:flex;align-items:center;justify-content:center;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.ic-btn{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:6px 12px;font-size:13px;transition:.2s}
+.ic-btn:hover{color:var(--text);border-color:var(--acc)}
+
+main{max-width:980px;margin:0 auto;padding:24px 16px 80px}
+.hero{background:radial-gradient(1200px 400px at 20% -50%,rgba(124,92,255,.25),transparent),var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(22px,4vw,32px);line-height:1.2;background:linear-gradient(90deg,#fff,#b9a8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);margin-top:8px;max-width:660px;font-size:14px}
+.hero p b{color:var(--text)}
+.hero .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:12px;color:var(--acc2)}
+
+.track{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin-bottom:16px;overflow:hidden;transition:.25s}
+.track.locked{opacity:.55;filter:grayscale(.5)}
+.track-head{display:flex;align-items:center;gap:14px;padding:18px 20px;cursor:pointer;user-select:none}
+.track-head:hover{background:var(--panel2)}
+.track-icon{font-size:28px;width:52px;height:52px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:14px;flex:none}
+.track-title{flex:1;min-width:0}
+.track-title h3{font-size:16.5px}
+.track-title small{color:var(--muted);font-size:12px}
+.track-meta{text-align:right;flex:none}
+.track-meta .pct{font-size:13px;font-weight:700;color:var(--acc2)}
+.track-bar{width:110px;height:7px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;margin-top:6px;overflow:hidden}
+.track-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));width:0}
+.lock-tag{font-size:11px;color:var(--gold);flex:none;max-width:150px}
+.lessons{display:none;border-top:1px solid var(--line);padding:12px}
+.track.open .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.lesson-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:7px;cursor:pointer;transition:.2s;position:relative}
+.lesson-card:hover{border-color:var(--acc);transform:translateY(-2px)}
+.lesson-card.done{border-color:rgba(61,220,132,.4)}
+.lesson-card.done::after{content:"";position:absolute;top:10px;right:12px;width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233ddc84' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12l5 5L20 7'/%3E%3C/svg%3E") no-repeat center/contain}
+.lc-top{display:flex;align-items:center;gap:10px}
+.lc-ico{font-size:22px}
+.lc-xp{margin-left:auto;font-size:11px;color:var(--gold);white-space:nowrap}
+.lesson-card h4{font-size:14px}
+.lesson-card small{color:var(--muted);font-size:12px}
+
+.overlay{position:fixed;inset:0;background:rgba(5,8,14,.78);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{width:100%;max-width:760px;background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden;animation:pop .25s ease}
+@keyframes pop{from{transform:translateY(18px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-head{padding:20px 24px 16px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(0,212,184,.08));border-bottom:1px solid var(--line)}
+.modal-head .kicker{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--acc2);font-weight:700}
+.modal-head h2{font-size:21px;margin-top:4px}
+.modal-head .mh-row{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.modal-body{padding:20px 24px;max-height:64vh;overflow-y:auto}
+.sec-title{font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);font-weight:800;margin:20px 0 8px}
+.modal-body p{color:#c7cedd;font-size:13.5px;margin-bottom:8px}
+.modal-body ul{margin:4px 0 10px 20px;color:#c7cedd;font-size:13.5px}
+.modal-body ul li{margin-bottom:5px}
+.tip{background:rgba(255,201,60,.08);border:1px solid rgba(255,201,60,.25);border-radius:12px;padding:12px 14px;font-size:13px;margin:14px 0;color:#ffe9ad}
+.tip b{color:var(--gold)}
+.story{background:rgba(0,212,184,.07);border:1px solid rgba(0,212,184,.25);border-radius:12px;padding:12px 14px;font-size:13px;margin:14px 0;color:#bdeee6}
+.story b{color:var(--acc2)}
+.promptbox{background:#0d1220;border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:12px;padding:12px 14px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#c8d3ee;margin:10px 0 4px;white-space:pre-wrap}
+.copy-btn{background:var(--panel2);border:1px solid var(--line);color:var(--acc2);border-radius:8px;padding:4px 12px;font-size:11px;margin-bottom:-2px}
+.copy-btn:hover{border-color:var(--acc2)}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{border-radius:12px;padding:10px 20px;font-weight:700;font-size:14px;transition:.2s}
+.btn-primary{background:linear-gradient(90deg,var(--acc),#5a3df0);color:#fff}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--acc)}
+.foot-msg{font-size:12px;color:var(--muted)}
+
+.quiz{margin-top:6px}
+.qq{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.qq h5{font-size:14px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;background:transparent;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:7px;transition:.15s}
+.opt:hover{border-color:var(--acc)}
+.opt.correct{border-color:var(--green);background:rgba(61,220,132,.14)}
+.opt.wrong{border-color:var(--red);background:rgba(255,93,122,.14)}
+.qq .expl{font-size:12px;color:var(--muted);margin-top:6px}
+.quiz-score{font-size:13.5px;font-weight:700;color:var(--acc2);margin-bottom:10px}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel2);border:1px solid var(--acc);color:var(--text);padding:12px 22px;border-radius:99px;font-size:14px;z-index:200;transition:.35s;opacity:0;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#toast.show{transform:translateX(-50%);opacity:1}
+.confetti{position:fixed;top:-12px;width:9px;height:14px;z-index:150;pointer-events:none;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.6}}
+
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.badge{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;opacity:.4;transition:.3s}
+.badge.earned{opacity:1;border-color:var(--gold);box-shadow:0 0 18px rgba(255,201,60,.12)}
+.badge .bi{font-size:34px}
+.badge h4{font-size:14px;margin-top:6px}
+.badge small{color:var(--muted);font-size:11.5px;display:block;margin-top:4px}
+h2.sec2{font-size:20px;margin-bottom:14px}
+.subtle{color:var(--muted);font-size:13px;margin-bottom:14px}
+
+.cert{display:none;background:linear-gradient(160deg,#1b2140,#10142a);border:2px solid var(--gold);border-radius:22px;padding:34px 26px;text-align:center;margin-top:20px}
+.cert.show{display:block}
+.cert .c-title{font-size:12px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+.cert h2{font-size:clamp(22px,4vw,32px);margin:10px 0}
+.cert .c-name{font-size:24px;font-weight:800;color:var(--acc2);border-bottom:1px solid var(--line);display:inline-block;padding:0 8px 6px;margin:8px 0}
+.cert p{color:var(--muted);font-size:13px;margin-top:10px}
+.cert .xp-final{margin-top:14px;font-size:14px;color:var(--text)}
+.name-in{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 14px;font-size:14px;max-width:320px;text-align:center}
+.reset-row{margin-top:28px;text-align:center;color:var(--muted);font-size:12px}
+.reset-row button{background:transparent;border:1px solid var(--line);color:var(--red);border-radius:10px;padding:6px 14px;font-size:12px}
+@media(max-width:640px){.xp-track{width:110px}.track-meta .track-bar{width:70px}.modal-body{padding:16px}}
+
+.ic{display:inline-block;vertical-align:-2px}
+.chip .ic{vertical-align:-3px}
+.tip .ic,.story .ic,.sec-title .ic{vertical-align:-3px}
+.hud-item .ic{vertical-align:-3px;color:var(--gold)}
+.bi .ic{color:var(--gold)}
+.lc-ico .ic,.track-icon .ic{color:var(--acc2)}
+h1 span[data-ic]{color:#b9a8ff}
+#toast .ic{vertical-align:-3px}
+
+/* ---- animations ---- */
+@keyframes oaFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes oaPop{0%{transform:scale(1)}35%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes oaCardIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes oaFloat{0%{opacity:0;transform:translate(0,8px) scale(.85)}15%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(0,-48px) scale(1.08)}}
+@keyframes oaPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes oaShine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.oa-pop{animation:oaPop .5s cubic-bezier(.2,.8,.2,1)}
+.cta-btn{background:linear-gradient(90deg,var(--acc2),#00e5c0);border:none;color:#04211a;font-weight:800;font-size:12px;padding:5px 14px;border-radius:99px;cursor:pointer;margin-left:12px;transition:transform .15s,box-shadow .15s;white-space:nowrap}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,212,184,.35)}
+.cta-btn:active{transform:translateY(0)}
+.oa-pulse{animation:oaPulse .7s cubic-bezier(.2,.8,.2,1)}
+.oa-float{position:fixed;z-index:300;pointer-events:none;color:var(--gold);font-weight:800;font-size:13px;animation:oaFloat 1.3s cubic-bezier(.2,.8,.2,1) both}
+.hero{animation:oaFadeUp .6s .05s cubic-bezier(.2,.8,.2,1) both}
+.track{animation:oaFadeUp .55s cubic-bezier(.2,.8,.2,1) both}
+.lesson-card{animation:oaCardIn .45s cubic-bezier(.2,.8,.2,1) both;transition:transform .18s,box-shadow .18s,border-color .18s}
+.lesson-card:hover{transform:translateY(-3px)}
+.badge{transition:transform .2s,box-shadow .2s}
+.badge:hover{transform:translateY(-3px) rotate(-1.2deg)}
+.track-bar i{position:relative;overflow:hidden;transition:width .7s cubic-bezier(.25,.9,.3,1);background-size:200% 100%}
+.track-bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:oaShine 2.6s 1.4s infinite}
+.track-head{transition:background .2s}
+.track-head:hover{background:rgba(124,92,255,.05)}
+button, .chip, .hud-item{animation:oaFadeUp .5s both}
+.hud .hud-item:nth-child(1){animation-delay:.05s}
+.hud .hud-item:nth-child(2){animation-delay:.1s}
+.hud .hud-item:nth-child(3){animation-delay:.15s}
+.hud .ic-btn{animation-delay:.2s}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="orb"></span> ORCHESTRATOR&nbsp;ACADEMY</div>
+  <div class="hud">
+    <div class="hud-item"><span data-ic="trophy" data-sz="15"></span> <b id="rankName">Novice</b></div>
+    <div class="hud-item"><span data-ic="bolt" data-sz="15"></span> <b id="xpVal">0</b> XP
+      <div class="xp-track"><div class="xp-fill" id="xpFill"></div><div class="xp-label" id="xpPct">0%</div></div>
+    </div>
+    <div class="hud-item"><span data-ic="flame" data-sz="15"></span> <b id="streakVal">1</b> day</div>
+    <button class="ic-btn" onclick="showBadges()"><span data-ic="medal" data-sz="14"></span> Badges</button>
+    <button class="ic-btn" id="examBtn" onclick="showExam()"><span data-ic="gradcap" data-sz="14"></span> Final Exam</button>
+    <button class="ic-btn" onclick="goHome()"><span data-ic="home" data-sz="14"></span> Home</button>
+    <button class="ic-btn" onclick="exportProgress()" title="Download a JSON backup of your progress"><span data-ic="dl" data-sz="14"></span> Backup</button>
+    <button class="ic-btn" onclick="$('importFile').click()" title="Restore progress from a backup file"><span data-ic="ul" data-sz="14"></span> Restore</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importProgress(this)">
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <h1>Stop using AI like a text box.<br>Start orchestrating it like a CEO. <span data-ic="crown" data-sz="24"></span></h1>
+    <p>Every lesson, prompt and framework from the live AI Orchestration workshop — distilled into
+    <b id="lessonCount">30</b> clickable missions. Earn XP, pass quizzes, unlock ranks, and finish with your
+    own <b>Orchestrator Certificate</b>.</p>
+    <div class="chips">
+      <span class="chip"><span data-ic="brain" data-sz="13"></span> 5 Levels + Bonus</span>
+      <span class="chip"><span data-ic="clipboard" data-sz="13"></span> Ready-to-copy prompts</span>
+      <span class="chip"><span data-ic="puzzle" data-sz="13"></span> Quizzes everywhere</span>
+      <span class="chip"><span data-ic="gradcap" data-sz="13"></span> Certification</span>
+      <span class="chip"><span data-ic="save" data-sz="13"></span> Progress auto-saves</span>
+    </div>
+  </section>
+
+  <div id="homeView">
+    <div id="tracksWrap"></div>
+    <div class="reset-row">Progress is saved in your browser. <button onclick="resetAll()">Reset all progress</button></div>
+  </div>
+
+  <section id="badgesView" style="display:none">
+    <h2 class="sec2"><span data-ic="medal" data-sz="20"></span> Achievement Showcase</h2>
+    <div class="badge-grid" id="badgeGrid"></div>
+  </section>
+
+  <section id="examView" style="display:none">
+    <h2 class="sec2"><span data-ic="gradcap" data-sz="20"></span> Orchestrator Final Exam</h2>
+    <p class="subtle">10 questions drawn from every level. Score 7+/10 to forge your certificate. Worth <b style="color:var(--gold)">250 XP</b>.</p>
+    <div id="examBody"></div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeLesson()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="kicker" id="mTrack"></div>
+      <h2 id="mTitle"></h2>
+      <div class="mh-row" id="mMeta"></div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeLesson()">Close</button>
+      <span class="foot-msg" id="quizMsg"></span>
+      <button class="btn btn-primary" style="margin-left:auto" id="finishBtn" onclick="completeLesson()"></button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ============ INLINE SVG ICON SYSTEM ============ */
+var ICE={
+ mic:'<rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/><path d="M8 22h8"/>',
+ crown:'<path d="M2 7l5 5 5-8 5 8 5-5-2 12H4L2 7z"/><path d="M6 19h12"/>',
+ map:'<path d="M9 3L3 5v16l6-2 6 2 6-2V3l-6 2-6-2z"/><path d="M9 3v16"/><path d="M15 5v16"/>',
+ signal:'<path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5 12a10 10 0 0 1 14 0"/><path d="M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1.2"/>',
+ mirror:'<ellipse cx="12" cy="9" rx="6" ry="7"/><path d="M12 16v5"/><path d="M8 21h8"/>',
+ notebook:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 2v20"/><path d="M12 7h5"/><path d="M12 11h5"/>',
+ toolbox:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M3 13h18"/>',
+ store:'<path d="M3 9l1.5-5h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 11v9h14v-9"/><path d="M9 20v-5h6v5"/>',
+ steth:'<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v2a4 4 0 0 0 8 0v-3"/><circle cx="18" cy="9" r="2"/>',
+ crane:'<path d="M3 21h18"/><path d="M7 21V3h10l4 6"/><path d="M7 9h8"/><rect x="15" y="13" width="4" height="4"/>',
+ headphones:'<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+ puzzle:'<path d="M10 3a2 2 0 0 1 2 2v2h4a2 2 0 0 1 2 2v3h-1a2 2 0 1 0 0 4h1v2a2 2 0 0 1-2 2h-4v-1a2 2 0 1 0-4 0v1H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2z"/>',
+ inbox:'<path d="M3 13l3-9h12l3 9v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6z"/><path d="M3 13h5a4 4 0 0 0 8 0h5"/>',
+ cart:'<circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3h2l2.4 12h10.2L20 7H6"/>',
+ trendup:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+ rocket:'<path d="M12 2c3.5 1.5 5.5 5 5.5 9.5L12 15l-5.5-3.5C6.5 7 8.5 3.5 12 2z"/><circle cx="12" cy="8.5" r="1.5"/><path d="M6.5 11.5L4 16l3.5-1"/><path d="M17.5 11.5L20 16l-3.5-1"/><path d="M10 17.5l2 4.5 2-4.5"/>',
+ doc:'<path d="M6 2h8l4 4v16H6V2z"/><path d="M14 2v4h4"/><path d="M9 12h6"/><path d="M9 16h6"/>',
+ chat:'<path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/><path d="M8 9h8"/><path d="M8 12.5h5"/>',
+ school:'<path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M7 11.5V16c0 1.5 10 1.5 10 0v-4.5"/><path d="M21 9v6"/>',
+ dashboard:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 9v12"/><path d="M12.5 15h6"/><path d="M12.5 18.5h4"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4.5" ry="9"/>',
+ sliders:'<path d="M4 6h16"/><circle cx="9" cy="6" r="2"/><path d="M4 12h16"/><circle cx="15" cy="12" r="2"/><path d="M4 18h16"/><circle cx="7" cy="18" r="2"/>',
+ scales:'<path d="M12 3v18"/><path d="M7 21h10"/><path d="M5 7h14"/><path d="M7 7l-3 6a3 3 0 0 0 6 0L7 7z"/><path d="M17 7l3 6a3 3 0 0 1-6 0l3-6z"/>',
+ bank:'<path d="M3 10l9-6 9 6H3z"/><path d="M5 10v7"/><path d="M9.5 10v7"/><path d="M14.5 10v7"/><path d="M19 10v7"/><path d="M3 20h18"/>',
+ keyboard:'<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01"/><path d="M10 10h.01"/><path d="M14 10h.01"/><path d="M18 10h.01"/><path d="M6 14h.01"/><path d="M18 14h.01"/><path d="M9 14h6"/>',
+ target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+ swarm:'<circle cx="12" cy="5" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="M10.6 7.1L6.6 15.9"/><path d="M13.4 7.1l4 8.8"/><path d="M7.4 18h9.2"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M5 13v8h14v-8"/><path d="M12 8s-1.5-5-4.5-5a2.5 2.5 0 0 0 0 5"/><path d="M12 8s1.5-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+ brain:'<rect x="5" y="5" width="14" height="14" rx="3"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v3"/><path d="M15 2v3"/><path d="M9 19v3"/><path d="M15 19v3"/><path d="M2 9h3"/><path d="M2 15h3"/><path d="M19 9h3"/><path d="M19 15h3"/>',
+ plug:'<path d="M9 2v6"/><path d="M15 2v6"/><path d="M6 8h12v4a6 6 0 0 1-12 0V8z"/><path d="M12 18v4"/>',
+ palette:'<path d="M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h5a4 4 0 0 0 4-4c0-3.3-4-6-9-6z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/>',
+ swords:'<path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M14.5 6.5L18 3h3v3l-3.5 3.5"/><path d="M11 19L5 13"/><path d="M8 16l-4 4"/><path d="M5 21l-2-2"/>',
+ robot:'<rect x="4" y="8" width="16" height="11" rx="3"/><circle cx="9" cy="13" r="1.1"/><circle cx="15" cy="13" r="1.1"/><path d="M9.5 16.5h5"/><path d="M12 4v4"/><circle cx="12" cy="3" r="1"/><path d="M4 13H2"/><path d="M22 13h-2"/>',
+ seed:'<path d="M12 21v-8"/><path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7z"/><path d="M12 13c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/>',
+ gradcap:'<path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11v5c0 1.6 12 1.6 12 0v-5"/><path d="M22 9v6"/>',
+ trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.7V17c0 .6-.5 1-1 1.2C7.9 18.8 7 20.3 7 22"/><path d="M14 14.7V17c0 .6.5 1 1 1.2 1.1.6 2 2.1 2 3.8"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+ medal:'<circle cx="12" cy="8" r="5"/><path d="M8.2 12.4 6.8 21l5.2-3 5.2 3-1.4-8.6"/>',
+ bolt:'<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>',
+ flame:'<path d="M12 2s5 4.5 5 9.5a5 5 0 0 1-10 0C7 9 8.5 6.5 9.5 5c.5 1.5 1.5 2.5 2.5 3 0-3 0-4.5 0-6z"/>',
+ lock:'<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+ check:'<path d="M4 12l5 5L20 7"/>',
+ x:'<path d="M5 5l14 14"/><path d="M19 5L5 19"/>',
+ bulb:'<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10.5c-.8.8-1 1.5-1 2.5h-6c0-1-.2-1.7-1-2.5A6 6 0 0 1 12 3z"/>',
+ clipboard:'<rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9z"/><path d="M9 11h6"/><path d="M9 15h6"/>',
+ flag:'<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>',
+ sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z"/>',
+ save:'<path d="M5 3h11l3 3v15H5V3z"/><path d="M8 3v6h8V3"/><rect x="8" y="13" width="8" height="5"/>',
+ circle:'<circle cx="12" cy="12" r="8"/>',
+ home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+ film:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16"/><path d="M17 4v16"/><path d="M3 9h4"/><path d="M17 9h4"/><path d="M3 15h4"/><path d="M17 15h4"/>',
+ warn:'<path d="M12 3l10 17H2L12 3z"/><path d="M12 10v4"/><path d="M12 17.5h.01"/>',
+ refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>',
+ print:'<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 17h10v4H7z"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 8.2h.01"/><path d="M12 11.5V16"/>',
+ dl:'<path d="M12 3v14"/><path d="M7 12l5 5 5-5"/><path d="M4 21h16"/>',
+ ul:'<path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 21h16"/>'
+};
+function ic(name,sz){
+  var body=ICE[name];
+  if(!body) return "";
+  sz=sz||14;
+  return '<svg class="ic" width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+body+'</svg>';
+}
+var EMO_SVG={'\u26A1':'bolt','\u{1F525}':'flame','\u{1F512}':'lock','\u274C':'x','\u2705':'check','\u{1F393}':'gradcap','\u{1F3AF}':'target','\u{1F381}':'gift','\u{1F396}':'medal','\u{1F3C6}':'trophy','\u{1F389}':'sparkle'};
+function emojicon(m){
+  var out=String(m);
+  for(var k in EMO_SVG){
+    var svg=ic(EMO_SVG[k],15);
+    out=out.split(k+'\uFE0F').join(svg);
+    out=out.split(k).join(svg);
+  }
+  return out;
+}
+
+/* ============================================================
+   CONTENT — every lesson distilled from the workshop transcript
+============================================================ */
+var TRACKS = [
+/* ---------------- BONUS ---------------- */
+{
+ id:"T0", icon:"gift", name:"Bonus Track — Tools & Mindset",
+ desc:"The warm-up: the voice + note-taking tool from the session, and the mindset that separates users from orchestrators.",
+ lessons:[
+ {id:"B1", icon:"mic", title:"Wispr Flow — Your Voice, Typed & Noted", xp:40,
+  read:[
+   {t:"p", x:"Wispr Flow is a voice app for Windows and Mac. Get it at <b>outskill.com/wisprflow</b>, double-click the downloaded app to install (no tutorial needed — it works the same on both OSes). It does two big jobs:"},
+   {t:"ul", x:[
+     "<b>Dictation → text:</b> press and hold <b>Ctrl + Option</b>, speak, release — everything you said appears as typed text. You can change this in settings.",
+     "<b>Notetaker:</b> inside the app there's a <b>Notetaker</b> tab. Click <b>Start Notes</b> before a meeting and it transcribes everything spoken, live, into a document.",
+     "<b>After the meeting:</b> click <b>Stop</b> and it generates a full <b>summary</b> of the whole thing.",
+     "<b>Chat with your meeting:</b> ask it questions like “what was that tool mentioned?” or “what was that prompt?” — it answers from the transcript.",
+     "Why the presenter hands you a link instead of fielding “can I get the notes?” — the tool <i>is</i> the notes. Install it and stop asking."]}
+  ],
+  tip:"Voice is an orchestrator weapon: dictate your prompts and full workflow instructions instead of typing. If a dictation is missed, Wispr keeps the raw audio so you can re-capture and paste it.",
+  prompt:"Workflow: outskill.com/wisprflow → install → Ctrl+Option to dictate anywhere → Notetaker → Start Notes → (meeting happens) → Stop → read summary → ask it questions about the meeting.",
+  quiz:[
+   {q:"What happens when you click “Start Notes” in Wispr Flow's Notetaker?",o:["It mutes your microphone","It starts transcribing everything said in the meeting, live","It records your screen video","It schedules the meeting"],a:1,e:"Notetaker produces a live written transcript of the entire meeting, then a summary when you stop."},
+   {q:"After clicking Stop, Wispr Flow gives you…",o:["A refund","A summary of the meeting you can question","A new link","Nothing"],a:1,e:"Stop closes the notes and generates a summary you can query afterward."}
+  ]},
+ {id:"B2", icon:"crown", title:"Orchestrator vs. User — The CEO Mindset", xp:40,
+  read:[
+   {t:"p", x:"Most people copy text from Gmail, paste it into an AI chat, say “rewrite this,” copy the answer back, and paste it in the email. They use a superintelligence like a fancy typing tool."},
+   {t:"ul", x:[
+     "An <b>orchestrator</b> gives AI access to the world — files, tools, accounts — then just <b>commands</b> it. You are the CEO. AI works for you.",
+     "You will learn skills, connectors and plugins; you will build projects, artifacts, dashboards, websites, and spin up multiple AI agents in parallel.",
+     "Not coding, lying, or memorizing prompts — orchestration is a genuinely new skill: getting AIs to do the job while you direct.",
+     "If AI can automate parts of your job, learn it <b>before</b> someone else does. Learners from this school got promotions, offers, and sold built workflows."]}
+  ],
+  tip:"Rating discipline: rate every AI output — “from 1 to 10, would I read this past the first 3 lines?” Orchestrators ruthlessly grade output and fix the cause, not blame the tool.",
+  prompt:"“You are my AI employee. I am the CEO. I will give you context, tools and goals — execute end-to-end, verify your work, and report back only when done.”",
+  quiz:[
+   {q:"What actually separates an orchestrator from a normal AI user?",o:["Better keyboard shortcuts","Access + delegation: AI operates inside their real tools end-to-end","A paid subscription","Writing longer prompts"],a:1,e:"Users copy-paste between apps; orchestrators connect AI to their world and command it."},
+   {q:"Learners featured in the workshop got results because they…",o:["Watched more videos","Became orchestrators: built workflows, agents, and automations","Typed faster","Bought hardware"],a:1,e:"They shipped AI workflows — job-search systems, automations, apps — that produced 6 interviews, promotions, a $1.4M sale."}
+  ]},
+ {id:"B3", icon:"map", title:"The 5-Level Roadmap", xp:30,
+  read:[
+   {t:"p", x:"Your whole climb to “kickass AI orchestrator,” as promised:"},
+   {t:"ul", x:[
+     "<b>Level 1 — Get AI to know you completely:</b> add context, build projects, teach it your way of doing things (skills).",
+     "<b>Level 2 — Connect your LLM to the world of tools:</b> Gmail, Slack, calendars, brokers, job boards — command AI inside your real accounts.",
+     "<b>Level 3 — Get LLMs to deliver tasks:</b> documents you comment on, decks, dashboards, design systems, websites.",
+     "<b>Level 4 — Have AI build things & use the best model:</b> OpenRouter, Multi, Compare, Councils.",
+     "<b>Level 5 — Delegate completely:</b> Claude Code, parallel agents, end-to-end workflows, schedules. Mind-bending territory.",
+     "Universal truth: what you learn here applies to ChatGPT, Gemini or any LLM — the workshop just picked one because the audience chose it."]}
+  ],
+  tip:"L4 and L5 are the ones that make you feel “what the hell is happening.” Don't skip; that's where the orchestrator identity is forged.",
+  prompt:"Level order: Know You → Connect Tools → Deliver Tasks → Best Multi-Model → Full Delegation & Schedules.",
+  quiz:[
+   {q:"Which statement about applying these levels is TRUE?",o:["Only one specific app can orchestrate","They transfer 1:1 to any LLM/app you use","Coding is required","Only Mac users benefit"],a:1,e:"The concepts are tool-agnostic — the same switch flips in ChatGPT, Gemini, etc."},
+   {q:"Level 2 is about…",o:["Pretty fonts","Connecting your LLM to your everyday tools (email, calendar, brokers…)","Buying GPUs","Prompt poetry"],a:1,e:"Level 2 = connectors: AI works inside the tools you use every single day."}
+  ]}
+ ]},
+/* ---------------- LEVEL 1 ---------------- */
+{
+ id:"T1", icon:"brain", name:"Level 1 — Make AI Know You Completely",
+ desc:"Context, projects and skills. Teach AI your style, data and process — until it works like your best employee, not a stranger.",
+ lessons:[
+ {id:"L1a", icon:"signal", title:"Three Ways to Teach an AI Who You Are", xp:40,
+  read:[
+   {t:"p", x:"For an AI to know you <i>completely</i>, you have three levers — stack all three and the output transforms:"},
+   {t:"ul", x:[
+     "<b>1. Context</b> — add your material: reports, files, docs it can reach when answering.",
+     "<b>2. Projects</b> — build an “AI employee” workspace: a named project holding your context + instructions (a Fitness Coach, a Dad's Health assistant…).",
+     "<b>3. Skills</b> — teach it your <b>way of doing things</b>: how you write, how you work, your judgement. Yes — you can teach AI literally anything you do today, and it's called a <b>skill</b>."]}
+  ],
+  tip:"Default AI output is generic almost always because it's missing YOU, not because the model is weak. First question to ask: “what context or skill is this output missing?”",
+  prompt:"“Before answering, check my project context files and instructions. Answer as my designated [role] expert — from my real data, in my style.”",
+  quiz:[
+   {q:"The three levers of Level 1 are…",o:["Context, projects, skills","Speed, size, price","Email, chat, calls","CPUs, RAM, GPUs"],a:0,e:"Context feeds facts, projects host specialised employees, skills teach your way of working."},
+   {q:"“Teaching AI the way you do things” is called…",o:["A plugin","A skill","A cookie","Fine-tuning from scratch"],a:1,e:"Skills capture your personal process so AI can replicate it on demand."}
+  ]},
+ {id:"L1b", icon:"mirror", title:"Why Default AI Output Reads Like an Essay", xp:40,
+  read:[
+   {t:"p", x:"Live demo: “Write a LinkedIn post on ‘How AI orchestration is the future of jobs in the era of superintelligence’ — and <b>ignore all skills and memory</b> this account has.” Result: “<i>For 200 years, your value of work came from what you do. The era is ending…</i>” — an essay. Boring."},
+   {t:"ul", x:[
+     "It knows <b>what a LinkedIn post is</b> (format, structure) — but not how to write a <b>great</b> one: no story, no hook in line 1.",
+     "A veteran creator's real posts hit <b>75K, 590K, 697K views</b>… and they're all written by AI. Secret ingredient: their style, taught to the AI as a skill.",
+     "The going-forward line everyone used: “Write a LinkedIn post on this topic, <b>exactly in my own style using the skill</b>.”",
+     "Compare outputs side by side: without skill = essay; with skill = “92 million jobs will disappear by 2030. But 170 million new ones will be created… which side of these numbers will you be on?”"]}
+  ],
+  tip:"When AI output is “fine but generic,” the missing piece is usually your personal pattern captured as a skill — Level 1's whole game.",
+  prompt:"“Write a LinkedIn post on [topic]. Requirements: hook in the first line, story-driven, first person, end on a challenge to the reader. Draft 1 = no constraints; then rewrite it as my 75K-views version would read.”",
+  quiz:[
+   {q:"Why did the demo instruct AI to ignore its skills and memory first?",o:["To save tokens","To show the baseline: the same AI writing WITHOUT knowing the user's style","Because skills are broken","To speed things up"],a:1,e:"Baseline first. Then the skill-taught version could be compared honestly on the side-by-side."},
+   {q:"The veteran's viral posts were actually written by…",o:["Ghostwriters","The creator, by hand, for 5 years straight","AI — writing in a style it was taught","LinkedIn's editor"],a:2,e:"AI + a taught style skill = consistent millions-of-views output."}
+  ]},
+ {id:"L1c", icon:"notebook", title:"Build a Style Playbook from Your Own Content", xp:50,
+  read:[
+   {t:"p", x:"Goal: turn your history into a training document. Real workflow:"},
+   {t:"ul", x:[
+     "Go to your platform's settings and <b>download your entire content history</b> (LinkedIn, for example, exports it into a sheet).",
+     "Open a new chat, share that sheet, and instruct: <b>“analyze only what I wrote BEFORE AI era”</b> — that's your authentic, un-assisted voice.",
+     "Ask AI to study likes/comments/<b>first lines, body, vocabulary, rhythm</b> — and turn all of it into <b>one incredible playbook document</b>.",
+     "The quality bar: hand the playbook to a new hire (“John”) — a human reading it once should be able to <b>replicate your style exactly</b>. If a human can, AI can.",
+     "Let it work — the workshop's run took about <b>20 minutes</b> to digest years of posts and write “How [the creator] writes LinkedIn content.”"]}
+  ],
+  tip:"The playbook is the bridge artifact: (a) trainable humans, (b) trainable AI. One document, two audiences.",
+  prompt:"“I've shared my full content analytics dump. Only analyze content I wrote BEFORE [date/AI adoption]. Study my likes, comments, first lines, body, word choices. Produce a complete playbook document — so complete that any human who reads it can replicate my style exactly.”",
+  quiz:[
+   {q:"Why analyze only pre-AI content?",o:["It's shorter","To capture your authentic voice — later posts reflect AI assistance","API limits","Nostalgia"],a:1,e:"Otherwise AI studies AI. Your genuine pattern lives in the pre-assistant era."},
+   {q:"The playbook's pass/fail test is:",o:["Length","A total stranger could read it and then write exactly like you","Number of emojis","Formatting only"],a:1,e:"Human-replicable = AI-replicable. That's the bar."}
+  ]},
+ {id:"L1d", icon:"toolbox", title:"Convert the Playbook Into a Living Skill", xp:50,
+  read:[
+   {t:"p", x:"Next step in the chain: document → capability."},
+   {t:"ul", x:[
+     "<b>Share:</b> hit Share on the playbook, <b>Copy private link</b>.",
+     "<b>New chat:</b> paste the link and say: “Can you convert this into a skill? I want to be able to say ‘<b>write like me</b>’ — and you write exactly like me using this document.”",
+     "AI works another ~20 minutes and creates the skill (e.g. “Write Like [Name]”).",
+     "<b>Click Save / remember this</b> — from now on, ANY chat can call it forever.",
+     "Then issue the command: same topic as before, one extra clause — “<b>make the LinkedIn post exactly in my own style, using the skill</b>.” It reales research, re-checks the skill, and writes like you."]}
+  ],
+  tip:"Same model, same prompt — the skill is the only variable. Side-by-side in the workshop: essay vs. hook, data, and a challenge to the reader.skill > effort.",
+  prompt:"“Here is my style playbook: [LINK]. Convert it into a skill named ‘Write like [me]’. Whenever I say ‘write like me,’ use this document and my pattern to produce content in my exact style. Save it permanently.”",
+  quiz:[
+   {q:"What locks the skill in permanently?",o:["Retyping it monthly","Clicking Save / “remember this” after creation","A browser bookmark","Paying extra"],a:1,e:"AI builds it; you seal it by saving. After that it's discoverable in every future chat."},
+   {q:"How do you invoke the skill months later?",o:["Re-paste the playbook","Rebuild it","Say “write it in my style using the skill”","New account"],a:2,e:"One line of natural language triggers the saved capability — zero setup."}
+  ]},
+ {id:"L1e", icon:"store", title:"Skill Libraries: Install Others' Skills (and the Humanize Trick)", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>You can write your own skills</b> — for emails, reports, anything. But you don't have to start from zero.",
+     "<b>Skill Hunter</b> (a paid platform in the workshop, ~$100 access tier; the presenter joked about paying $10K total): about <b>5,000 skills</b>, searchable by category — coding, automation, writing, marketing, DevOps, general purpose.",
+     "<b>Real use-case:</b> AI wrote a Twitter/X blog article — correct, end-to-end… but “<b>it sounded like AI</b>.” Slop. Everyone can smell AI prose.",
+     "<b>Fix = humanize:</b> search “humanize” → multiple hits (MD Review, Unslop, Humanize…). Click <b>Show prompt</b> → copy.",
+     "<b>Paste into your chat:</b> “This article sounds like AI slop. I want you to humanize it. Read it, install this new skill called Humanizer (details pasted below), rewrite the whole article in a human way, show before/after.”",
+     "<b>Result:</b> the skill audited and flagged <b>35 different AI writing patterns</b>, rewrote the article, and produced a doc with before → after → <i>why</i> for every change, plus the final version. One superpower, installed in minutes."]}
+  ],
+  tip:"No budget? Build skills yourself, or hunt the internet — plenty of free ones exist. What matters is knowing the <b>install-and-deploy pattern</b>: Show prompt → paste → instruct install + use.",
+  prompt:"“Here's my article. It reads like AI slop. Here is a skill from the library: [PASTE]. Install it, use it to rewrite the whole article in a human style, and show me before/after with the reason behind every change.”",
+  quiz:[
+   {q:"How is a marketplace skill installed into your AI?",o:["Download and run an installer","Copy its “show prompt” into your chat and ask AI to install + apply it","Email the vendor","Restart the app"],a:1,e:"The skill ships as a prompt spec; AI installs and uses it when you paste and request."},
+   {q:"What did the Humanize skill actually do?",o:["Made text longer","Flagged ~35 AI writing patterns, rewrote the article, and logged before/after/why for each change","Deleted the article","Translated it"],a:1,e:"Audit + rewrite + changelog — a complete pattern-removal operation."}
+  ]},
+ {id:"L1f", icon:"steth", title:"Projects: Build a Micro AI Employee", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Create:</b> sidebar → New Project (+ button or Projects list) → name it — e.g. <b>Fitness Coach</b>. The UI changes: you now own an AI employee.",
+     "<b>Add context:</b> Add → Upload from device → pick files. Example: a 51-page blood report (Tata 1MG style) dropped in once, forever available.",
+     "<b>Add instructions:</b> the system prompt. A one-liner (“be my fitness coach, check my blood report”) gets a good answer. A <b>long, detailed instruction</b> gets top-1%-coach answers. Prompts matter — Level 1g shows how to generate one.",
+     "<b>Use it:</b> “I've worked out for 2 months but gained no muscle — is anything in my blood off?” → it reads the full report and answers like an expert: the metrics that could be blocking gains + what to do next.",
+     "<b>More projects:</b> a <b>Dad's Health</b> project with dad's blood tests + medicines — when he feels unwell you get a doctor-flavored first pass (still see a real doctor for anything serious).",
+     "One snapshot of the concept: <b>micro AI employees living inside your Claude</b>."]}
+  ],
+  tip:"Pattern = one employee per domain: Fitness, Dad's Health, Client Work, Legal, Studies. Don't build a god-project — build specialists.",
+  prompt:"Project: Fitness Coach. Context: [upload bloodwork files]. Instruction: “You are my top-1% fitness coach. Every time I ask something, first check my blood report, cite the exact values, then answer like an expert. End every answer with 2–3 concrete next actions.”",
+  quiz:[
+   {q:"A one-line instruction yields…",o:["Top-expert answers","Decent answers — but detailed instructions produce expert quality","Errors","Same output"],a:1,e:"Good ≠ great. Long, structured instructions are what make answers top-1%."},
+   {q:"The Dad's Health project shows…",o:["Family tracking is impossible","One AI employee per domain, holding family context so you never re-explain it","AI replaces doctors entirely","Storage waste"],a:1,e:"Context once + instant expert context later — with a human doctor remaining for anything serious."}
+  ]},
+ {id:"L1g", icon:"crane", title:"Prompt Engineering Payoff: Let AI Architect the Prompt", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Learning prompt engineering the slow way</b> takes months. The workshop's move: <b>install a top-expert prompt engineer as an asset</b> and let IT write the prompt.",
+     "<b>A Prompt Library platform</b> exists (~10,000 prompts); it ships a <b>plugin</b> you drag-and-drop in Settings → Plugins → Add. Now your assistant carries insider prompting frameworks.",
+     "<b>Then ask:</b> “Please write a detailed instruction for my project. It's a fitness expert with bloodwork context that answers any fitness question about me. Use my expert prompt engineer skill/plugin and write the instructions so this project works like magic.”",
+     "<b>What actually ran:</b> AI went through memory → found the installed <b>prompt architect</b> → identified the prompt category (fitness) → scored my naive prompt (<b>3.8/10</b>) → applied its own framework called <b>TIDDEC</b> → produced a polished long instruction.",
+     "<b>Copy → paste into the project's instruction field</b> → the Fitness Coach now answers like the expert you never were."]}
+  ],
+  tip:"Meta-rule of orchestration: instead of learning every expert domain, <b>install experts</b>. You don't master design, law, finance or prompting — you architect who's inside your corner.",
+  prompt:"“Rate my current project instruction [skim]. Using the prompt-architect plugin I installed, rewrite it as a complete expert-grade instruction for my [role] project: [role, context, goals]. Show before/after score.”",
+  quiz:[
+   {q:"What's the shortcut the workshop taught for pro-level prompts?",o:["Memorize 100 prompt patterns","Install a prompt-expert plugin/skill and have AI write the instruction","Ask friends","Trial and error for months"],a:1,e:"The plugin brought 10,000 prompts + frameworks (e.g. TIDDEC) that AI applies directly."},
+   {q:"Roughly how was the naive instruction scored?",o:["9/10","About 3.8 / 10","15/10","No scoring"],a:1,e:"3.8 → then rebuilt into an expert instruction. The skill did the thinking."},
+   {q:"What is TIDDEC?",o:["A chat app","The prompting framework the installed expert applied","A fitness metric","A connector"],a:1,e:"The architect-internal framework used to build the final instruction."}
+  ]},
+ {id:"L1h", icon:"headphones", title:"Zero-Budget Version: Gemini Notebooks & NotebookLM", xp:40,
+  read:[
+   {t:"p", x:"“But I need a paid account for projects!” — wrong. Free path demonstrated:"},
+   {t:"ul", x:[
+     "Go to <b>gemini.google.com</b> → sidebar → <b>create a new notebook</b> → name it whatever you want. <b>Notebooks are completely free.</b>",
+     "<b>Add sources</b> — upload the same files (bloodwork etc.). That's your context.",
+     "<b>Notebook settings → paste the same detailed instruction</b> you'd use as a project system prompt.",
+     "Ask questions → grounded answers from YOUR sources. Your fitness expert now exists on free Gemini.",
+     "<b>Open it in NotebookLM</b> (the advanced layer) for extras:",
+     "<b>Audio Overview:</b> “explain what's off in my report” → it generates a full podcast-style audio brief of your data, like a top doctor talking you through it (“This is the brief on [name]'s bloodwork…”).",
+     "<b>Video Overview:</b> same data → a narrated explainer video (the workshop's treated the blood report like a “high-performance mechanics diagnostic dashboard”).",
+     "Plus slide decks and interactive Q&A — one notebook, many deliverables."
+   ]}],
+   tip:"No money is never an excuse at this level. Notebooks + sources + one good instruction replicates Level 1 entirely.",
+  prompt:"Notebook “Fitness Expert” → sources: [upload bloodwork] → settings instruction: [paste your long system instruction] → then: “Generate an Audio Overview: which values are off in my report and what should I do?”",
+  quiz:[
+   {q:"The free project equivalent in Gemini is…",o:["A regular search","Notebooks: add sources + custom instructions","Claude Desktop","GroupMe"],a:1,e:"Same pattern — file context + a standing instruction + grounded Q&A — at zero cost."},
+   {q:"NotebookLM's Audio Overview is…",o:["Background music","A generated audio explanation of YOUR sources","A voice recorder","Text-to-speech only for prompts"],a:1,e:"It turns your documents into a listenable expert brief — doctor-style for the blood report example."}
+  ]}
+ ]},
+/* ---------------- LEVEL 2 ---------------- */
+{
+ id:"T2", icon:"plug", name:"Level 2 — Connect AI to the World of Tools",
+ desc:"Gmail, Slack, Drive, calendars, brokers, job platforms. Give AI hands. Command it inside your real life.",
+ lessons:[
+ {id:"L2a", icon:"puzzle", title:"Connectors: Give Your AI Hands", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Where:</b> in the app, hit the add button → <b>Manage Connectors</b> (or Add connectors) → hundreds of available services.",
+     "<b>Connect what you use daily:</b> Gmail, Slack, Microsoft 365, Intercom, Google Drive, calendars — the list goes on.",
+     "<b>Multiple accounts:</b> three different email accounts can be connected at once (demonstrated live — tick boxes show what's connected).",
+     "<b>Power:</b> once connected, your assistant no longer answers about “a hypothetical inbox” — it can act <b>inside your actual Gmail / Drive / calendar</b>.",
+     "<b>Missing your tool?</b> If a connector doesn't exist, you can <b>create your own</b> and connect it — deeper skill, covered as you go further."
+   ]}],
+  tip:"Zero-connector workflows die at Level 2. Connectors are the\"hands\" — every lesson after this one assumes at least email + one other tool.",
+  prompt:"“Go to insert → Manage Connectors → link my Gmail, Google Calendar and Google Drive. Then tell me exactly what you can now access and what actions you can take.”",
+  quiz:[
+   {q:"What problem do connectors solve?",o:["Slow typing","Chatting about imaginary data — instead AI can operate inside your real tools","Screen size","Token limits"],a:1,e:"Connectors turn an AI from an answer machine into an operator with live access."},
+   {q:"If a connector for your favorite tool doesn't exist, you…",o:["Abandon orchestration","Create your own connector","Try again next year only","Ask AI politely to guess"],a:1,e:"You can build your own — a deeper skill the workshop points toward."}
+  ]},
+ {id:"L2b", icon:"inbox", title:"Inbox at Zero: Command Prompt That Reads All 3 Inboxes", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>The prompt:</b> “Quickly go through all <b>three</b> email accounts I connected. Is there anything unread in the last 24 hours that's probably important? Let me know in a very simple way.”",
+     "<b>Real results from the session:</b> a student blocked from a workshop, a bank request, a pending income payment, a contract waiting for signature, WhatsApp line-item disconnects, a partnership thread, a shipment follow-up — plus a bundle of speaking invitations.",
+     "<b>Drilling in:</b> ask a follow-up like “what are these invites?” — Claude goes back into email to give the actual details: a YouTube creator summit, a national AI-for-MPs session, a top engineering institute invite.",
+     "<b>The privacy guard</b> (for live demos & shared screens): tell AI “I'm currently in a session and thousands are watching — anything sensitive (dates, times, prices) — <b>don't show it; blur it out</b>.” Then “it's OK to show real details now” when you want exposure back."]}
+  ],
+  tip:"Privacy guard is not paranoia — it's a system. Build it into any command run in view of others (calls, demos, recordings).",
+  prompt:"“Check all 3 inboxes for unread-and-important email in the last 24h. I'm screen-sharing live — blur any scene-sensitive info (names, prices, dates). Summarize what needs me first.”",
+  quiz:[
+   {q:"What does the privacy-guard boilerplate do?",o:["Encrypts mail","Makes AI hide sensitive details while others watch, and reveal on your word","Disables AI","Filters spam"],a:1,e:"AI masks names, dates, prices… then un-masks when you say the demo's over."},
+   {q:"What kind of follow-up drill did the session demo?",o:["Delete all email","'What are these speaking invites?' — deeper re-dig into email for details","Write new emails","Row house pricing"],a:1,e:"It digs again and returns the real invite details — proving context-aware dialogue."}
+  ]},
+ {id:"L2c", icon:"cart", title:"Two Hippo-Patterns: Undelivered Orders & Subscription Leak", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Audit 1 — Undelivered e-commerce:</b> “Find every order I made in the last 3 months that has NOT been delivered — list order details and current delivery status.” (Real returns: H&M on-the-way with a failed delivery attempt, a Meta store order flagged, a Shopify order out for delivery…)",
+     "<b>Audit 2 — Subscription leak:</b> “Tell me every tool/service I'm paying for based on the last 30 days of invoices — my card charges are going through the roof.” → instantly a clean list of every AI tool and subscription bleeding money.",
+     "<b>Why orchestrators think like this:</b> it's <b>underwater value</b> — money and problems a human would never win back manually (would take 30–60+ minutes, if ever). AI finishes in ~2.",
+     "Same pattern applies to: contracts you haven't re-checked, invoices about to auto-renew, receipts missing for tax, etc."
+  ]}],
+  tip:"Level-2 question worth memorizing: “What's something valuable in my email that nobody would ever have the patience to find manually?” — ask AI that, monthly.",
+  prompt:"“Scan all inboxes: (1) every e-commerce order from the last 3 months with NO delivery confirmation — flag each; (2) every subscription / invoice in the last 30 days with amounts. Two clean lists, sorted by urgency.”",
+  quiz:[
+   {q:"Roughly how long would a human take to find all undelivered orders manually?",o:["Seconds","30 minutes to 1-2 hours, maybe forever","Exactly the same as AI","Trade-off with prices"],a:1,e:"That's the workshop's estimate — 30 to 60+ minutes of real scrolling vs. ~2 minutes for AI."},
+   {q:"What did the subscription audit rely on?",o:["Your memory","Invoice emails — that's why inbox connection is required","The bank calling","Google ads"],a:1,e:"Invoices are scattered across mailboxes; the connector is the key to the audit."}
+  ]},
+ {id:"L2d", icon:"trendup", title:"Broker Connector → Financial Advisor + Bloomberg Terminal", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Connect your broker account</b> (workshop demo used a Zerodha/Kite-style account via its connector).",
+     "<b>Advisor prompt:</b> “Act as my financial advisor. Go through my stocks via Kite. Show: (1) which are making money vs losing; (2) for losers, do research from credible internet sources; (3) suggest what I should sell / hold / buy more of. Use my expert prompt engineer skill first to polish the prompt.”",
+     "<b>Result:</b> it pulled real holdings, researched the five losers publicly, and returned a per-stock verdict — sell this, hold that, buy more here — each with reasoning.",
+     "<b>Then level up:</b> “Could you build this into a <b>Bloomberg-style terminal</b> so I can see everything in real time?” → a live dashboard with win/loss totals, total return, per-stock view, ETFs, and action items. Your private money cockpit."
+  ]}],
+  tip:"Sequence to memorize: <b>Connect → Analyze → Advise → Visualize.</b> Capacity first, then intelligence, then decision, then artifact on top.",
+  prompt:"“Act as my financial advisor. Read my Kite holdings via connector: winners/losers table. For every losing stock, research publicly from credible sources and recommend sell / hold / buy more. Then turn the analysis into a Bloomberg-style live dashboard.”",
+  quiz:[
+   {q:"What makes the buy/hold/sell advice trustworthy?",o:["The model's brand","Real portfolio via connector + public research from credible sources","Vibes","The longest prompt"],a:1,e:"Live data + external research = grounded financial advice, not imagination."},
+   {q:"'Build a Bloomberg-style terminal' produced…",o:["A PDF of tickers","A live dashboard with winners/losers/returns and action items","A new bank account","Only numbers in chat"],a:1,e:"It went from analysis artifact straight into a usable private cockpit."}
+  ]},
+ {id:"L2e", icon:"rocket", title:"User vs. Orchestrator, Level 2 Edition", xp:40,
+  read:[
+   {t:"p", x:"Average solution in the wild: copy email → paste into AI → “rewrite” → copy back → paste into Gmail. Repeat forever. That's using a superintelligence to intermittently help you type."},
+   {t:"ul", x:[
+     "<b>Orchestrators instead:</b> connect the tool once — then simply command. AI reads, edits, drafts and acts <b>from within</b> the tool.",
+     "<b>Identity shift:</b> you are the <b>CEO</b>. You stop shuttling information — you order outcomes.",
+     "<b>Toolkit</b> at level 2: hundreds of public connectors, plus the ability to build a custom one for whatever lacks one.",
+     "This mindset is exactly why Level 5's 3-agent workflows become possible — you already think in access + commands, not copy-paste taps."]}
+  ],
+  tip:"Tell-tale signal you're still typing: you've pasted the same text between two tools more than twice this week. There's a connector for that.",
+  prompt:"“Direct access granted by my connectors. From now on: execute tasks end-to-end using my connected tools — summarize, draft, and stage outputs — only return to me for real decisions.”",
+  quiz:[
+   {q:"What did the workshop call “the ones copy-pasting text forever”?",o:["Normal users","Just typing-tool users, not orchestrators","Power users","Developers"],a:1,e:"Orchestrators route work through connect + command; users shuttle text manually."},
+   {q:"Level 2's hidden prerequisite for Level 5 is…",o:["Learning Bash","Thinking in connected-access + commands, so parallel agents feel natural","Buying a monitor","Reading code"],a:1,e:"The mindset built here is exactly what makes multi-agent sameness possible later."}
+  ]}
+ ]},
+/* ---------------- LEVEL 3 ---------------- */
+{
+ id:"T3", icon:"palette", name:"Level 3 — AI as Your Teammate: Docs, Decks, Dashboards",
+ desc:"Artifacts: comments, version trails, design systems, dashboards, websites — a real feedback loop with an AI co-worker.",
+ lessons:[
+ {id:"L3a", icon:"doc", title:"Artifacts: Documents You Co-Work On", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Where:</b> sidebar → <b>Artifacts</b>. Build documents, slide decks, design stuff — even dashboards. All inside your assistant.",
+     "<b>The mindset change:</b> it's not just “AI can make a document.” It's that you can work with AI <b>like a team member on the document itself</b>.",
+     "<b>Workshop example:</b> the style playbook you made in Level 1 became a live document there.",
+     "<b>Feedback loop:</b> select some text, hit the <b>comment</b> button, drop your feedback — AI edits <b>that exact selection</b>, while you watch, in real time. You keep iterating until you like it."
+  ]}],
+  tip:"Rule of thumb: if it will be read by anyone (you, your team, a client), ask AI to produce it as an artifact — not as chat text — so the feedback loop works.",
+  prompt:"“Turn this into a document artifact — not just chat text — so I can select parts of it and leave comments you act on directly.”",
+  quiz:[
+   {q:"What makes Artifacts different from chat output?",o:["Nothing","Real deliverables (doc/deck/dashboard/site) you open, edit and co-redact with AI","An emoji pack","A code compile"],a:1,e:"Artifacts = a workspace for the thing itself, where you review and revise live."},
+   {q:"The workshop demoed co-working via…",o:["Voice notes","Selecting text + commenting inside the doc; AI revised that part","Only new prompts","Figma"],a:1,e:"Select → comment → revision, all inside the document."}
+  ]},
+ {id:"L3b", icon:"chat", title:"Comment, Select, Transform: AI as a Coworker", xp:50,
+  read:[
+   {f:true, t:"ul", x:[
+     "<b>Select headline → comment “come up with a better title.”</b> AI rewrites just that heading, live.",
+     "<b>Select a passage → “it's too long — make it short.”</b> It cut 5 sentences into 2 and preserved the meaning.",
+     "<b>Select a list → “make it into a table.”</b> It structures it properly, right inside the doc.",
+     "<b>History:</b> the workshop showed ~7 trails/version history per doc — you can literally see exactly what AI did and why after each round.",
+     "<b>Identity shift:</b> you're not “prompting an AI,” you're <b>treating AI like a team member</b> — leave feedback, it works, it never complains, it ships instantly."
+  ]}],
+  tip:"Editing by comment beats editing by re-prompting: you anchor change to a specific selection, so AI patches the part, not everything.",
+  prompt:"(In an artifact) Select heading → Comment: “Come up with a better title.” Select paragraph → “It's too long, cut to 2 sentences.” Select block → “Make this into a table.”",
+  quiz:[
+   {q:"What's the most precise way to fix one part of an artifact?",o:["Regenerate everything","Select exactly that text and comment your change","Copy to Google Docs","New chat"],a:1,e:"Anchored feedback = anchored fix; the rest of the doc stays put."},
+   {q:"What did the trail/version history give you?",o:["Nothing","A visible record of each AI edit — what changed and why","The ability to lock the doc","Undo waterfall"],a:1,e:"Every comment produced a visible trail of reasoning + result."}
+  ]},
+ {id:"L3c", icon:"school", title:"Convert to Slides + Teach It Your Company's Design", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Doc/article → deck:</b> in Artifacts, hit <b>Slides</b>, paste the URL of your doc: “Make this into a 10-slide presentation with minimal design and beautiful colors.” AI works on slides directly.",
+     "<b>Not happy with one chart?</b> Select it → “change the chart.” It swapped the graph, then even swapped it again per feedback.",
+     "<b>The real-world constraint:</b> “all our presentations should be in the style of my company.” Everyone has this problem.",
+     "<b>Design Systems:</b> add button → <b>New Design System using Claude</b>. Paste your company's URL (outskill.com in the example) and instruct: “go through our website, understand its design, and create a design system — so any future presentation, deck, document, or dashboard you build comes out in the style of my company.”",
+     "It took ~<b>30 minutes</b> to build. Then, from Slides, select that design system → the same deck rebuilt in brand-exact design: authentic logos, colors, vibe.",
+     "<b>The presenter had built many</b>: Cred, DoorDash, Loda, Mighty, Outskill, Paper Boat — proof it generalizes to any company's brand."]
+   }],
+  tip:"Build ONE design system per brand you work with — then every artifact for that brand is instantly on-brand forever.",
+  prompt:"“Paste [company website]. Understand its colors, fonts, layout, logo usage, and vibe. Create a Design System for me so that every future deck/doc/dashboard I ask you to make automatically comes out in my company's style.”",
+  quiz:[
+   {q:"How did AI get onboarded to 'your company's look'?",o:["Screenshot manually","Design System: feed the company's website, it learns the style, and you reuse it","Nothing — fake results","New font choice"],a:1,e:"Feed the brand site once → permanent style engine."},
+   {q:"After a Design System exists, a deck becomes…",o:["Random again","On-brand, built from the doc, selectable by design system from Slides","Broken","Per-deck manual setup"],a:1,e:"You select the design system; the same knowledge now looks native."}
+  ]},
+ {id:"L3d", icon:"dashboard", title:"Dashboards & Debugging (Netflix-Style Optional)", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Build:</b> Artifacts → Dashboard, feed it live data — a Google Sheet of survey results workshipped here: “Build a dashboard using this data, in the style of X. Make sure the data updates every time the sheet updates.”",
+     "<b>Behaviors:</b> full-screen mode, a refresh button that pulls from the sheet.",
+     "<b>When it didn't refresh:</b> presenter told it directly — “the data is not being updated. Please update it.” AI debugged its own artifact, then it populated.",
+     "<b>Mindset again:</b> an artifact is live material <b>you and AI fix together</b>, not one-shot output.",
+     "Same class of artifact powers: <b>LinkedIn dashboard</b>, <b>employee stat dashboard</b>, sale portfolio terminal (Level 2), etc."
+  ]}],
+  tip:"When an artifact misbehaves, don't start over — talk to it. “This isn't working / the chart is unreadable / the data is stale: fix it.” AI treats your comments as issues to patch.",
+  prompt:"“Build a real-time dashboard from this sheet's data. Style: [option]. Add a refresh button. Self-check: every metric should visibly update when the sheet updates.”",
+  quiz:[
+   {q:"The dashboard wasn't updating. The orchestrator move was…",o:["Rebuild a new dashboard","Comment into the artifact: 'the data is not being updated — please update'","Restart the laptop","Email support"],a:1,e:"You fix it in place; AI is the engineer who debugs its own artifact."},
+   {q:"Artifacts like dashboard + design system + comment flow give you the ability to…",o:["Avoid feedback entirely","Run a professional design review loop — like a real product team with AI","Code from scratch","Buy a design agency"],a:1,e:"Building, inspecting, commenting, repairing — a full teamwork loop, not one-shot generation."}
+  ]},
+ {id:"L3e", icon:"globe", title:"Docs, Decks, Dashboards — and Websites", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Everything ships as an artifact:</b> documents, presentations, dashboards, and even <b>websites</b> — all in one place.",
+     "<b>Workshop case:</b> presenter had a resume; asked AI: “use my resume, convert this into a website, in the style of my company” — a real, openable website appeared.",
+     "<b>Share it:</b> click Share → copy the private link → distribute to anyone. Recruiter-ready in seconds.",
+     "<b>Meta-lesson:</b> the practical surface moves beyond chat: <b>'artifacts' as a delivery system</b> — just like a table of contents to skills and deliverables, but visual and interactive."
+  ]}],
+  tip:"One solo workflow, quoted from the session: research (Level 2) → article (chat) → humanize (skill) → doc (artifact) → slides (design system) → dashboard (live data) → share (link).",
+  prompt:"“Take my resume (uploaded) and convert it into a personal website in my company's style — clean, modern, printable. Give me a shareable private link plus instructions to update it later.”",
+  quiz:[
+   {q:"What's the broad conclusion of Level 3?",o:["Chat is enough","An entire artifact surface — docs, slides, dashboards, websites — is available, with a live comment/fix loop","Nothing new","Only coders can use artifacts"],a:1,e:"Level 3 turns AI chat into a full design/production workspace."},
+   {q:"The resume-to-website demo shows artifacts can produce…",o:["Only docs","Real websites with share links","PowerPoint only","Spreadsheets only"],a:1,e:"It shipped an actual personal website generated from one document."}
+  ]}
+ ]},
+/* ---------------- LEVEL 4 ---------------- */
+{
+ id:"T4", icon:"swords", name:"Level 4 — Always Use the Best Model",
+ desc:"OpenRouter, Multi, Compare, Councils. Leave model loyalty behind — race the best minds on every important question.",
+ lessons:[
+ {id:"L4a", icon:"globe", title:"OpenRouter: 456 Models On Demand", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>What:</b> an open hub of <b>456 different AI models</b>. Everything you thought was “ChatGPT vs Claude vs Gemini” is actually a menu of hundreds.",
+     "<b>Check rankings:</b> in the workshop's moment, the top model wasn't even the one people default to — the presenter switched best\"that day\" from vibe.",
+     "<b>Orchestrator rule:</b> always be able to use the best model for <b>this specific</b> task. Skill, connectors and artifacts are only half the stack — model power is the other half.",
+     "<b>Pricing:</b> a few dollars goes a long way; the workshop topped up $5 on a separate platform (next lesson) and had plenty of room to play."]}
+  ],
+  tip:"Fastest upgrade tip: for writing = rank-check a model's style strength; for code = benchmark standings; for reasoning = try the current frontier. Rankings, not testimonials.",
+  prompt:"“Rank 456 of today's top models for the following task: [task]. Then tell me the top 3 and their differences that matter for my output.”",
+  quiz:[
+   {q:"How many models does OpenRouter expose (per session)?",o:["~5","~40","~456","One"],a:2,e:"Hundreds and hundreds — a full marketplace of minds."},
+   {q:"Why care about model rankings?",o:["Fashion","Because the best model for your task may change weekly — and better models produce better outputs","To lower your electricity bill","To reduce RAM usage"],a:1,e:"Best available model = best available outcome; rankings keep you current."}
+  ]},
+ {id:"L4b", icon:"sliders", title:"Multi: One Interface for Hundreds of Models", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>What:</b> a paid platform with a <b>1-month free trial</b> to play with.",
+     "<b>Setup:</b> put a few dollars into OpenRouter ($5 demoed) → connect it to <b>Multi</b> → now in ONE chat interface you can call essentially <b>~460 models</b>.",
+     "<b>Every chat can choose its brain:</b> the model selector lets you pick any of the hundreds — write a post with one, analyze with another, compare a third.",
+     "<b>Why it matters:</b> you're free from one company's roadmap. If a new model tops the boards tomorrow, you start using it <b>tomorrow</b> — no migration, no new account.",
+     "Combine with Level 1–3 skills: your skills, connectors, and artifacts all stay; only the engine swaps per-task."
+  ]}],
+  tip:"Use the free trial month to run a personal \"model burn-down\": for your top 10 daily tasks, find which model actually wins — then route them permanently.",
+  prompt:"“Treat this interface as model-agnostic. For each of my tasks, propose which of today's top-ranked models to use and why. Run it on that model, then show two named alternatives I could have used.”",
+  quiz:[
+   {q:"What is Multi, in this lesson's terms?",o:["A gym","An app that connects OpenRouter's hundreds of models into one chat experience","A web browser","A model itself"],a:1,e:"One interface over the whole model market — pick per chat, per task."},
+   {q:"Why top up OpenRouter with $5?",o:["Gift cards","Credit pool so any model on the hub can run — including the best ones","Refund","Ad-free"],a:1,e:"The tiny credit = access across the whole relay at the time needed."}
+  ]},
+ {id:"L4c", icon:"scales", title:"Compare: Race 4 Models on the Same Prompt", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Compare</b> (in Multi): give one prompt → it runs your selected models <b>in parallel</b> — the demo raced <b>4</b>, and you can run more (up to 10 mentioned).",
+     "Same question, four answers, side by side. No more “the first answer I saw seemed fine.”",
+     "<b>Don't know which is best?</b> Click <b>“Help me choose.”</b> Multi runs one more model to judge all four and tells you the winner — in the workshop's run it flagged the third answer and said “<b>keep Claude and continue</b>.”",
+     "<b>Explaining a hard idea simply</b> was the demo prompt — perfect for spotting who explains clearly vs. who fluffs.",
+     "<b>The loop:</b> race → judge → keep winner → continue the same thread with the winning answer."
+  ]}],
+  tip:"Use Compare for: mission-critical writing, complex explanations, any question where 'kinda good' isn't good enough. Fast question? Skip the ceremony.",
+  prompt:"“Race these models on one prompt: [prompt]. Show all answers side by side. Then run a judge model to declare the single best answer and why — and continue the thread from it.”",
+  quiz:[
+   {q:"What does 'Compare' do in Multi?",o:["Compares prices","Runs several chosen models in parallel on the same prompt","Compares files","Deletes duplicates"],a:1,e:"Parallel race, side-by-side output — the basis of honest model comparison."},
+   {q:"'Help me choose' spawns…",o:["A version history","One more model that reviews all candidates and declares the best one","A purchase page","A re-roll"],a:1,e:"It's an AI-Judge — from four answers, one verdict."}
+  ]},
+ {id:"L4d", icon:"bank", title:"Council & Second Opinion: Make Models Debate", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Second Opinion:</b> any answer you're unsure about → click the button. <b>5 different models</b> read that answer, review it, and give you a verdict. Errors get caught <b>by other AIs</b> — before you act.",
+     "<b>Council:</b> ask a question to multiple model families (demo: Anthropic + OpenAI + Google models). They don't just answer — they <b>debate each other</b> and converge on <b>one final answer</b>.",
+     "Workshop council question: “Should I buy a home, or rent and invest the difference?” — three famous brains argued and met at a single conclusion.",
+     "<b>Scale:</b> not 3, not 4 — you can get <b>10 AI models</b> competing and discussing if you want.",
+     "<b>Why this is elite:</b> single-model answers are single <i>opinions</i> — this is <b>supervision at superintelligence scale</b>, a check no human panel could afford at speed."
+  ]}],
+  tip:"Save Council and Second Opinion for decisions you can't afford to get wrong: money, health, public claims, anything you'd regret one wrong call on.",
+  prompt:"“Council this question across Anthropic / OpenAI / Google models: [prompt]. Have them debate each other's reasoning, then converge on ONE final answer with the key agreeing points.”",
+  quiz:[
+   {q:"'Second Opinion' walks your answer through…",o:["Legal review","5 different models that review the full answer and return a verdict","Your past chats","A text editor"],a:1,e:"A cross-examination by other superintelligences — error-catching before damage."},
+   {q:"'Council' mode means…",o:["Chamber of commerce","Models debate each other on your question and converge on one final answer","Two models racing only","A meeting scheduler"],a:1,e:"Debate → converge. The workshop's house-vs-rent demo produced one agreed conclusion."}
+  ]}
+ ]},
+/* ---------------- LEVEL 5 ---------------- */
+{
+ id:"T5", icon:"robot", name:"Level 5 — Full Delegation: Agents on Autopilot",
+ desc:"Claude Code, Indeed + Apollo connectors, three parallel agents, resume rewrites, cold emails — scheduled to run every morning.",
+ lessons:[
+ {id:"L5a", icon:"keyboard", title:"Claude Code: Chat's Big Brother (Still No Coding)", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Not regular Claude chat</b> — open the <b>Claude Desktop App</b>, click the <b>Code</b> button, and you enter a new section built for executing automations.",
+     "\"Just because we're on Code doesn't mean we need a software engineer\" — you <b>describe work</b>; it does the engineering. Nothing to code, everything to orchestrate.",
+     "<b>Same connectors apply</b> (Manage Connectors in the Code view) for Gmail, Indeed, Apollo, etc.",
+     "Level 5 lives here because multi-step automation needs execution — agents that launch agents, write files, send emails to drafts, and run on schedule."]}
+  ],
+  tip:"Rule of thumb: quick questions = chat. Long, multi-step work (jobs, research, outreach, reports) = Code mode. Same away-from-keyboard instincts either way.",
+  prompt:"(Claude Desktop → Code) “Help me work through this task list end-to-end. I'll attach context. Drive my connected tools via connectors — don't ask me for each tiny step.”",
+  quiz:[
+   {q:"What is 'Claude Code' in this workshop?",o:["A programming course","A mode in the desktop app where AI executes multi-step automations without you coding","A code theme","Python"],a:1,e:"Same natural-language conversation — deeper execution capabilities."},
+   {q:"You describe outcomes; you never need to…",o:["Own a mouse","Write a single line of code yourself","Use words","Log in"],a:1,e:"Orchestration, not software engineering."}
+  ]},
+ {id:"L5b", icon:"target", title:"The Job-Hunt Prompt That Kicked Off Everything", xp:50,
+  read:[
+   {t:"ul", x:[
+     "<b>Setup:</b> free <b>Indeed</b> account → connected via Connectors (Indeed = jobs platform, like a LinkedIn for hiring).",
+     "<b>Drop your resume file</b> directly into Claude Code's input.",
+     "<b>The prompt:</b> “I want you to help me apply for jobs. Here is my resume. Find me roles in San Francisco and New York paying at least <b>$200,000 USD</b>. I'm looking for an <b>AI-first role</b> — I understand AI and orchestration deeply, though I do not write code. Use my resume to know who I am, and find the <b>top 5 roles that opened in the last 24 hours</b>. Use the Indeed connector.”",
+     "<b>Real results from the session:</b> AI Strategy & Adaptation at Hims&Hers, Head of Corporate Affairs Strategy at Replit, AI Alliance Manager at EY, Employer Brand at OpenAI, AI Data Partnerships at a stealth robotics-AI company.",
+     "Notice <b>how contextual the matches are</b> — it understood the background (AI orchestrator, non-engineer) rather than keyword-matching generically."]}
+  ],
+  tip:"Change the domain, keep the pattern: internships, freelancing, tenders, grant calls, conferences. 'Top 5 X posted in the last 24h based on my [spec], via [connector]' is a universal probe.",
+  prompt:"“Help me apply for jobs. My resume is attached. Find top-5 AI-first roles in [city], ≥ [salary], posted in the last 24 hours. Note: I'm exceptional at AI/orchestration, not at writing code. Use the Indeed connector.”",
+  quiz:[
+   {q:"Why did the resume-matching feel custom?",o:["Random noise","The agent understood who you are (background, constraints) beyond keywords","You bribed the filter","Because they were tiny jobs"],a:1,e:"Real profile understanding — the whole point of dropping the resume first."},
+   {q:"The 'last 24 hours' filter matters because…",o:["Cheap trick","Recent postings are where you can genuinely compete early","Fashion only","It auto-applies"],a:1,e:"Fresh listings in the day-window give you a real edge in outreach."}
+  ]},
+ {id:"L5c", icon:"swarm", title:"Spin Up Three Parallel AI Employees", xp:60,
+  read:[
+   {t:"ul", x:[
+     "<b>Command:</b> “For the top three roles, spin up <b>three parallel AI agents</b> inside this chat. Assign: Agent 1 → job 1, Agent 2 → job 2, Agent 3 → job 3. Each agent must:",
+     "1) Research its company. 2) <b>Rewrite my resume</b> based on the research + the job description from the posting link, and <b>save it as PDF</b>. 3) Research the <b>decision makers</b> hiring for this role. 4) Find their <b>email IDs using the Apollo connector</b> (free account: 100 credits). 5) Draft a beautiful <b>cold email</b> based on the research, attach the resume PDF, and drop it as a <b>draft in my Gmail</b>. <b>Don't stop until everything is done end-to-end. If done, do it again to verify.</b>”",
+     "<b>View it live:</b> it launched <b>3 agent panels</b> — Hazel/Lawyer-style agents per company: Hims agent, Replit agent, EY agent. Tap any to watch its sub-tasks in parallel.",
+     "<b>Apollo setup:</b> free Apollo.io account → connect as connector → agent used <b>9 credits</b> to source real decision-maker emails.",
+     "<b>Results in ~5–10 minutes:</b> 3 tail-shaped PDF resumes created, ~7 cold-email <b>drafts</b> saved in Gmail (real personalization — no fake send), all staged for human review before sending."]}
+  ],
+  tip:"“Don't stop till it's done / do it again if you did it” = completion insurance. “Draft, don't send” = human-in-the-loop on anything with your name on it.",
+  prompt:"“Spin up N parallel AI agents, one per target: (1) deep-research the company; (2) tailor my resume to the actual JD, save as PDF; (3) identify decision-makers hiring for this; (4) find their emails via the Apollo connector; (5) draft a cold email in my Gmail with the PDF attached. Do not stop until every agent's pipeline is done and verified. Never auto-send.”",
+  quiz:[
+   {q:"What did 'spin up 3 parallel agents' actually produce?",o:["Three chat windows","Three real agents, each driving one company's full research→email pipeline simultaneously","Three files","Getting a temp"],a:1,e:"Real concurrent pipelines, launched by one prompt, one per target."},
+   {q:"Why tell agents 'if you did it already, do it again to verify'?",o:["Waste resources","To force genuine completion + self-verification instead of a premature 'done'","Slash costs","Classic TDD"],a:1,e:"It guards against walking away early and against false 'done' claims."},
+   {q:"Apollo's role is…",o:["Sending spam","Sourcing real decision-maker emails via a connected platform (credits model)","Time tracking","A browser"],a:1,e:"A reliable, verified contact-finding capability, metered with free credits."}
+  ]},
+ {id:"L5d", icon:"clock", title:"Make It Happen Every Single Morning", xp:60,
+  read:[
+   {t:"ul", x:[
+     "<b>Schedule it:</b> after the workflow runs once, say: “Once you finish this process, I want you to do this <b>every single day at 7:00 AM</b>. Just repeat the whole process I told you.”",
+     "Hit save → open <b>Scheduled</b> — the workflow lives there as a recurring job.",
+     "<b>Every morning:</b> fresh job search, tailored PDFs, sourced contacts, ready-to-fire drafts — all sitting in Gmail <b>before you wake up</b>. You review and click Send.",
+     "<b>Learner achievement接连:</b> one workshop alum did this exact style for six interviews + three offers in 22 days — then SOLD the workflow to five clients. Workflow as a product.",
+     "<b>Another AI employee</b> (taught as the Saturday live-build): every day at 9AM → research best content ideas → check Slack for topics already spoken about → cross-check against past 1,000 LinkedIn posts to pick 3 → research → <b>phone call each morning to ask for personal takes</b> → write posts in own style via skill → schedule with SuperGrow. 24/7/365."]}
+  ],
+  tip:"Orchestrator's contract: AI executes <b>everything walk-up-to-the-point of public attribution</b>. Your Send / Publish / Sign is the final human gate — always.",
+  prompt:"“Once complete, schedule this entire pipeline to run every day at 7:00 AM. Never auto-send anything — leave drafts for my manual review and Send.”",
+  quiz:[
+   {q:"How does a one-time agent run become a daily employee?",o:["Hope","One command: schedule this workflow to repeat daily at 7 AM","Re-prompt each day manually","Alarm clock"],a:1,e:"A single Scheduled entry turns a live demo into a permanent employee."},
+   {q:"What role does the human keep?",o:["None at all","Pre-send review: every email waits as a draft for your Send click","Writing the resume","Cold calling backup"],a:1,e:"Human-in-the-loop: your inbox, your name, your judgment on the trigger."},
+   {q:"The alumnan's 22-day job-hunt outcome?",o:["Nothing","6 interviews + 3 offers, then sold the same workflow to 5 paying clients","One rejection","A tweet"],a:1,e:"The workflow wasn't just a job-hack — it became a sellable product."}
+  ]}
+ ]}
+];
+
+/* ================= EXAM ================= */
+var EXAM = [
+ {q:"Which trio lets AI truly 'know' you? (Level 1)",o:["Context, Projects, Skills","Typing, speaking, prompt","Email, calendar, Slack","Docs, decks, dashboards"],a:0,e:"Level 1's whole triple: context files + a named project + a taught skill."},
+ {q:"Before AI can teach to your content style, you must… (L1)",o:["Read it a story","Feed it your own content archive to build a playbook","Buy a course","Switch to coding"],a:1,e:"Playbook first: study your real content, then convert that playbook into a skill."},
+ {q:"A skill from a marketplace is installed by… (L1)",o:["Downloading an .exe","Pasting that skill's special prompt into your chat and asking AI to install and use it","Yearly subscription","Bluetooth pairing"],a:1,e:"Show prompt → paste → \"install and use\" is the entire flow."},
+ {q:"A single project with files + a long system instruction is essentially… (L1)",o:["A group chat","A micro AI employee with persistent knowledge and a role","A spreadsheet","An antivirus"],a:1,e:"That is the exact framing: projects = employees, not tabs."},
+ {q:"The 'privacy guard' line you add before screen-sharing says… (L2)",o:["'Ignore my emails'","'Don't show anything sensitive — blur names, dates, prices'","'Never write emails'","'Verify everything twice'"],a:1,e:"'I'm presenting live — don't show sensitive info; blur it out' — then reveal on request."},
+ {q:"Data mining in Level 2 returned… (L2)",o:["Nothing real","Undelivered orders, live-subscription invoice list, stock portfolio reality","Random facts","Marketing spam"],a:1,e:"Undelivered e-commerce orders, paid subscriptions in the last 30 days, plus stock holdings via broker."},
+ {q:"Compare and Council both belong to… (L4)",o:["Yoga lessons","Multi-model strategies: race 4+ in parallel or make them converge on one answer","Level 1 only","Team meetings"],a:1,e:"Compare = parallel race + judge; Council = debate till they converge."},
+ {q:"'Second Opinion' walks your answer through… (L4)",o:["Grammar check","5 different models that review it and give a verdict","A re-roll","Your past chats"],a:1,e:"Cross-examination by other superintelligences — catch errors before they cost you."},
+ {q:"The 3-agent job pipeline ended with… (L5)",o:["Emails auto-sent blindly","Drafts staged in Gmail awaiting your manual Send — human-in-the-loop","A deleted resume","A screenshot"],a:1,e:"Agents stage; the human presses Send. Delegation with judgment kept upstairs."},
+ {q:"The core metaphor for all 5 levels:",o:["AI as a toy","You as a CEO orchestrating AI employees end-to-end","AI as a threat","Prompts as poetry"],a:1,e:"You the CEO; AI the employee (or agent team). Everything else cascades from that one shift."}
+];
+
+/* ================= BADGES ================= */
+var BADGES = [
+ {id:"first",   icon:"seed", name:"First Blood",            desc:"Complete your first lesson"},
+ {id:"bonus",   icon:"gift", name:"Warm-Up",                desc:"Finish the whole Bonus Track",             track:0},
+ {id:"lvl1",    icon:"brain", name:"Known by the Machine",   desc:"Finish Level 1",                           track:1},
+ {id:"lvl2",    icon:"plug", name:"Plugged In",             desc:"Finish Level 2",                           track:2},
+ {id:"lvl3",    icon:"palette", name:"Artifact Artisan",       desc:"Finish Level 3",                           track:3},
+ {id:"lvl4",    icon:"swords", name:"Model Gladiator",        desc:"Finish Level 4",                           track:4},
+ {id:"lvl5",    icon:"robot", name:"Agent Overlord",         desc:"Finish Level 5",                           track:5},
+ {id:"perfect", icon:"target", name:"Sharpshooter",           desc:"Score 100% on any lesson quiz"},
+ {id:"exam",    icon:"gradcap", name:"Certified Orchestrator", desc:"Pass the final exam (7+/10)"},
+ {id:"xp800",   icon:"trophy", name:"AI CEO",                 desc:"Reach 800 XP"}
+];
+
+var RANKS = [["Novice",0],["Apprentice",120],["Operator",300],["Orchestrator",600],["Architect",950],["AI Executive",1300],["Legendary Orchestrator",1700]];
+
+/* ================= STATE ================= */
+var KEY = "orchestratorAcademy_v1";
+var S = loadState();
+function loadState(){
+  var fresh = {xp:0, done:[], bestQuiz:{}, examScore:-1, examPassed:false, lastVisit:"", streak:1, badges:[], name:"", remLast:""};
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(!raw) return fresh;
+    var o = JSON.parse(raw);
+    if(!o || typeof o !== "object") return fresh;
+    o.done = Array.isArray(o.done) ? o.done : [];
+    o.badges = Array.isArray(o.badges) ? o.badges : [];
+    o.bestQuiz = o.bestQuiz || {};
+    o.examScore = (typeof o.examScore === "number") ? o.examScore : -1;
+    o.examPassed = !!o.examPassed;
+    o.lastVisit = o.lastVisit || "";
+    o.streak = o.streak || 1;
+    o.name = o.name || "";
+    o.remLast = o.remLast || "";
+    return o;
+  }catch(e){ return fresh; }
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function hasDone(id){ return S.done.indexOf(id) !== -1; }
+function today(){ return new Date().toISOString().slice(0,10); }
+(function streak(){
+  var t = today();
+  if(S.lastVisit !== t){
+    var y = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if(S.lastVisit === y) S.streak++; else if(S.lastVisit) S.streak = 1;
+    S.lastVisit = t; save();
+  }
+})();
+
+/* ================= HELPERS ================= */
+function $(id){ return document.getElementById(id); }
+function allLessons(){ var a=[]; TRACKS.forEach(function(t){ a=a.concat(t.lessons); }); return a; }
+function findLesson(id){
+  for(var i=0;i<TRACKS.length;i++){
+    for(var j=0;j<TRACKS[i].lessons.length;j++){
+      if(TRACKS[i].lessons[j].id===id) return {t:TRACKS[i], l:TRACKS[i].lessons[j]};
+    }
+  }
+  return null;
+}
+function pctSafe(a,b){ if(!b) return 0; return Math.round(a/b*100); }
+function rankFor(xp){ var r=RANKS[0]; for(var i=0;i<RANKS.length;i++){ if(xp>=RANKS[i][1]) r=RANKS[i]; } return r; }
+function nextRankFor(xp){ for(var i=0;i<RANKS.length;i++){ if(RANKS[i][1]>xp) return RANKS[i]; } return null; }
+function totalLessonCount(){ return allLessons().length; }
+
+/* ================= TOAST & CONFETTI ================= */
+var toastTimer;
+function toast(msg,ms){
+  var t=$("toast");
+  t.innerHTML=emojicon(msg);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove("show"); },ms||2800);
+}
+function hideToast(){ clearTimeout(toastTimer); $("toast").classList.remove("show"); }
+function cta(msg,label,fn,ms){
+  var t=$("toast");
+  t.innerHTML=emojicon(msg);
+  var b=document.createElement("button");
+  b.className="cta-btn"; b.textContent=label;
+  b.onclick=function(){ hideToast(); fn(); };
+  t.appendChild(b);
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove("show"); },ms||6000);
+}
+function confetti(){
+  var colors=["#7c5cff","#00d4b8","#ffc93c","#ff5d7a","#3ddc84","#e8ecf5"];
+  for(var i=0;i<26;i++){
+    var d=document.createElement("div"); d.className="confetti";
+    d.style.left=(Math.random()*100)+"vw";
+    d.style.background=colors[Math.floor(Math.random()*colors.length)];
+    d.style.animationDuration=(1.4+Math.random()*1.8)+"s";
+    d.style.animationDelay=(Math.random()*0.3)+"s";
+    document.body.appendChild(d);
+    (function(el){ setTimeout(function(){ el.remove(); },3800); })(d);
+  }
+}
+
+/* ================= BADGE LOGIC ================= */
+function grantBadge(id){
+  if(S.badges.indexOf(id)!==-1) return;
+  var b=null;
+  for(var i=0;i<BADGES.length;i++) if(BADGES[i].id===id) b=BADGES[i];
+  if(!b) return;
+  S.badges.push(id);
+  toast(ic('medal',14)+" Badge unlocked: "+ic(b.icon,14)+" "+b.name);
+  confetti();
+}
+function evaluateBadges(){
+  if(S.done.length>=1) grantBadge("first");
+  for(var i=0;i<BADGES.length;i++){
+    var b=BADGES[i];
+    if(b.track!==undefined){
+      var t=TRACKS[b.track], complete=true;
+      for(var j=0;j<t.lessons.length;j++) if(!hasDone(t.lessons[j].id)) complete=false;
+      if(complete) grantBadge(b.id);
+    }
+    if(b.id==="perfect"){
+      for(var q in S.bestQuiz){
+        var found=findLesson(q);
+        if(found && S.bestQuiz[q]===found.l.quiz.length*10) grantBadge("perfect");
+      }
+    }
+    if(b.id==="xp800" && S.xp>=800) grantBadge("xp800");
+  }
+}
+
+/* ================= TRACK PAGE ================= */
+function trackXpEarned(t){
+  var a=0;
+  t.lessons.forEach(function(l){ if(hasDone(l.id)) a += l.xp + (S.bestQuiz[l.id]||0); });
+  return a;
+}
+function trackXpMax(t){
+  var a=0;
+  t.lessons.forEach(function(l){ a += l.xp + l.quiz.length*10; });
+  return a;
+}
+function trackDoneCount(t){
+  var n=0; t.lessons.forEach(function(l){ if(hasDone(l.id)) n++; }); return n;
+}
+function trackLocked(t, idx){
+  if(idx===0) return "";
+  var prev=TRACKS[idx-1];
+  var prevDone=trackDoneCount(prev);
+  var selfStarted=false;
+  t.lessons.forEach(function(l){ if(hasDone(l.id)) selfStarted=true; });
+  if(prevDone>=3 || selfStarted) return "";
+  return ic('lock',12)+" Complete 3 lessons of "+prev.name.split("—")[0].replace("Bonus Track","Bonus").trim()+" to unlock";
+}
+function renderTracks(){
+  var wrap=$("tracksWrap"); wrap.innerHTML="";
+  TRACKS.forEach(function(t,i){
+    var earned=trackXpEarned(t), max=trackXpMax(t);
+    var dn=trackDoneCount(t);
+    var complete=dn===t.lessons.length;
+    var p=pctSafe(earned,max);
+    var lock=trackLocked(t,i);
+    var el=document.createElement("div");
+    el.className="track"+(lock?" locked":"");
+    el.innerHTML=
+      '<div class="track-head">'+
+        '<div class="track-icon">'+ic(t.icon,30)+'</div>'+
+        '<div class="track-title"><h3>'+t.name+'</h3><small>'+t.desc+'</small></div>'+
+        (lock?'<div class="lock-tag">'+lock+'</div>':'')+
+        '<div class="track-meta"><div class="pct">'+(complete?ic('check',13):p+'%')+'</div>'+
+        '<div class="track-bar"><i style="width:'+p+'%"></i></div>'+
+        '<small style="color:var(--muted);font-size:11px">'+dn+'/'+t.lessons.length+' lessons</small></div>'+
+      '</div><div class="lessons"></div>';
+    var grid=el.querySelector(".lessons");
+    t.lessons.forEach(function(l, li){
+      var done=hasDone(l.id);
+      var c=document.createElement("div");
+      c.className="lesson-card"+(done?" done":"");
+  c.style.animationDelay=(li*60)+"ms";
+      var xptext = done
+        ? ic('check',11)+" done · +"+(l.xp+(S.bestQuiz[l.id]||0))+" XP"
+        : l.xp+" XP"+((S.bestQuiz[l.id]||0)?" (bonus "+(S.bestQuiz[l.id])+")":"");
+      c.innerHTML='<div class="lc-top"><span class="lc-ico">'+ic(l.icon,22)+'</span><span class="lc-xp">'+xptext+'</span></div>'+
+                  '<h4>'+l.title+'</h4><small>'+l.quiz.length+'-question quiz · ~5 min</small>';
+      c.onclick=function(){ openLesson(t,l); };
+      grid.appendChild(c);
+    });
+    (function(tr, card){
+      card.querySelector(".track-head").onclick=function(){ card.classList.toggle("open"); };
+    })(t, el);
+    if(dn>0 && !complete) el.classList.add("open");
+    el.style.animationDelay=(i*80)+"ms";
+    wrap.appendChild(el);
+  });
+}
+
+/* ================= LESSON MODAL ================= */
+var current={t:null,l:null};
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function openLesson(t,l){
+  current={t:t,l:l};
+  $("mTrack").textContent=t.name;
+  $("mTitle").innerHTML=ic(l.icon,24)+" "+esc(l.title);
+  $("mMeta").innerHTML='<span>'+ic("bolt",14)+' '+l.xp+' XP</span><span>'+ic("puzzle",13)+' '+l.quiz.length+' quiz Qs (+10 each)</span><span>'+ic("clock",13)+' ~5 min</span><span>'+(hasDone(l.id)?ic("check",12)+" Completed":ic("circle",12)+" New")+'</span>';
+  var html="";
+  l.read.forEach(function(b){
+    if(b.t==="p") html+='<p>'+b.x+'</p>';
+    else if(b.t==="ul"){
+      html+='<ul>';
+      b.x.forEach(function(x){ html+='<li>'+x+'</li>'; });
+      html+='</ul>';
+    }
+    else if(b.t==="tip") html+='<div class="tip">'+ic("bulb",13)+' <b>Pro tip:</b> '+b.x+'</div>';
+    else if(b.t==="story") html+='<div class="story">'+ic("film",13)+' <b>From the workshop:</b> '+b.x+'</div>';
+    else if(b.t==="warn") html+='<div class="tip">'+ic("warn",13)+' '+b.x+'</div>';
+  });
+  if(l.tip) html+='<div class="tip">'+ic("bulb",13)+' <b>Pro tip:</b> '+l.tip+'</div>';
+  if(l.story) html+='<div class="story">'+ic("film",13)+' <b>From the workshop:</b> '+l.story+'</div>';
+  if(l.prompt){
+    html+='<div class="sec-title">'+ic("clipboard",12)+' Ready-to-use prompt</div>';
+    html+='<div><button class="copy-btn" data-p="'+encodeURIComponent(l.prompt)+'">'+ic("clipboard",11)+' Copy prompt</button><div class="promptbox">'+esc(l.prompt)+'</div></div>';
+  }
+  html+='<div class="sec-title">'+ic("puzzle",12)+' Quiz — +10 XP per correct answer</div><div class="quiz" id="quizArea"></div>';
+  $("mBody").innerHTML=html;
+  Array.prototype.forEach.call(document.querySelectorAll(".copy-btn"),function(b){
+    b.onclick=function(){
+      var decoded=decodeURIComponent(b.getAttribute("data-p"));
+      try{ navigator.clipboard.writeText(decoded); }
+      catch(e){
+        var ta=document.createElement("textarea"); ta.value=decoded; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+      }
+      b.innerHTML=ic("check",11)+" Copied!";
+      setTimeout(function(){ b.innerHTML=ic("clipboard",11)+" Copy prompt"; },1600);
+    };
+  });
+  buildQuiz(l);
+  var done=hasDone(l.id);
+  $("finishBtn").style.display = done ? "none" : "";
+  $("finishBtn").innerHTML=ic("check",13)+" Mark complete";
+  $("quizMsg").textContent = done ? "Review mode — reopening won't give extra XP." : "Answer the quiz, then mark complete.";
+  $("overlay").classList.add("show");
+  $("mBody").scrollTop=0;
+  document.body.style.overflow="hidden";
+}
+function closeLesson(){
+  $("overlay").classList.remove("show");
+  document.body.style.overflow="";
+  renderTracks(); renderHud();
+}
+
+function buildQuiz(l){
+  var area=$("quizArea"); area.innerHTML="";
+  var reviewed=hasDone(l.id);
+  var head=document.createElement("div");
+  head.className="quiz-score"; head.id="quizHead";
+  head.textContent = reviewed ? "Review mode" : "Score: 0/"+l.quiz.length;
+  area.appendChild(head);
+  var answered=0, correct=0, tot=l.quiz.length;
+  function updHead(){ head.textContent="Score: "+correct+"/"+tot+" — "+(correct*10)+" XP banked in this run"; }
+  l.quiz.forEach(function(q,qi){
+    var box=document.createElement("div"); box.className="qq";
+    box.dataset.qi=qi;
+    box.innerHTML='<h5>'+(qi+1)+'. '+q.q+'</h5>';
+    q.o.forEach(function(o,oi){
+      var btn=document.createElement("button"); btn.className="opt"; btn.textContent=o;
+      btn.onclick=function(){
+        if(box.dataset.done) return;
+        box.dataset.done="1"; answered++;
+        var ok = (oi===q.a);
+        if(ok) correct++;
+        btn.classList.add(ok?"correct":"wrong");
+        if(!ok) box.querySelectorAll(".opt")[q.a].classList.add("correct");
+        var ex=document.createElement("div"); ex.className="expl"; ex.innerHTML=ic("info",13)+" "+q.e;
+        box.appendChild(ex);
+        updHead();
+      };
+      box.appendChild(btn);
+    });
+    area.appendChild(box);
+  });
+  if(reviewed){
+    var sc=document.createElement("div"); sc.className="quiz-score";
+    sc.innerHTML=ic("check",12)+" Best score saved for this lesson: "+(S.bestQuiz[l.id]||0)+"/"+tot;
+    area.insertBefore(sc, head);
+    l.quiz.forEach(function(q,qi){
+      var box=$("quizArea").querySelector('.qq[data-qi="'+qi+'"]');
+      box.dataset.done="1";
+      if(S&&S.bestQuiz[l.id]!==undefined){/* show all answers as reveal */}
+      var ex=document.createElement("div"); ex.className="expl"; ex.innerHTML=ic("info",13)+" "+q.e;
+      box.appendChild(ex);
+    });
+  }
+}
+
+function completeLesson(){
+  var t=current.t, l=current.l;
+  if(!t || !l) return;
+  if(hasDone(l.id)) return;
+  var head=$("quizHead");
+  var m = head ? /Score: (\d+)\/(\d+)/.exec(head.textContent) : null;
+  var quizXp = m ? parseInt(m[1],10)*10 : 0;
+  var gained = l.xp + quizXp;
+  S.done.push(l.id);
+  S.xp += gained;
+  var prevBest = S.bestQuiz[l.id] || 0;
+  if(quizXp/10 > prevBest) S.bestQuiz[l.id]=quizXp/10;
+  if(m && parseInt(m[1],10)===l.quiz.length) grantBadge("perfect");
+  evaluateBadges();
+  save();
+  confetti();
+  floatXp("+"+gained+" XP");
+  OA_doneCount++;
+  toast(ic('check',15)+" +"+gained+" XP — mission complete!");
+  $("finishBtn").style.display="none";
+  $("quizMsg").textContent="Logged. Close and pick your next mission, or check the map.";
+  renderHud();
+  var idx=t.lessons.indexOf(l);
+  var next=t.lessons[idx+1];
+  if(next){ $("quizMsg").textContent="Next up in this track: “"+next.title+"”"; }
+}
+
+/* ================= HUD ================= */
+function totalXpPossible(){
+  var a=0;
+  allLessons().forEach(function(l){ a+=l.xp+l.quiz.length*10; });
+  a+=250; /* exam */
+  return a;
+}
+var OA_prev={rank:null,xp:null,streak:null};
+function oaPopEl(id){ var e=$(id); if(!e) return; e.classList.remove("oa-pop"); void e.offsetWidth; e.classList.add("oa-pop"); }
+function pulseHudIcon(byId){
+  var e=$(byId); if(!e) return;
+  var iv=e.parentElement.querySelector(".ic");
+  if(iv){ iv.classList.remove("oa-pulse"); void iv.offsetWidth; iv.classList.add("oa-pulse"); }
+}
+function renderHud(){
+  $("lessonCount").textContent=totalLessonCount();
+  if(OA_prev.xp!==null && S.xp>OA_prev.xp) oaPopEl("xpVal");
+  OA_prev.xp=S.xp;
+  $("xpVal").textContent=S.xp;
+  var r=rankFor(S.xp);
+  if(OA_prev.rank && OA_prev.rank!==r[0]){ oaPopEl("rankName"); toast(ic('trophy',15)+" Rank up: "+r[0]+" — the compounding is real",3200); pulseHudIcon("rankName"); }
+  OA_prev.rank=r[0];
+  $("rankName").textContent=r[0];
+  var nxt=nextRankFor(S.xp);
+  var lo=r[1], hi=nxt?nxt[1]:r[1]+400;
+  var p = nxt ? Math.max(0,Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100))) : 100;
+  $("xpFill").style.width=p+"%";
+  $("xpPct").textContent = nxt ? (p+"% → "+nxt[0]) : "MAX RANK";
+  if(OA_prev.streak!==null && S.streak>OA_prev.streak){ toast(ic('flame',15)+" "+S.streak+"-day streak — no zero days"); pulseHudIcon("streakVal"); }
+  OA_prev.streak=S.streak;
+  $("streakVal").textContent=S.streak;
+  var btn=$("examBtn");
+  if(hasDone("L5d")) btn.style.background="linear-gradient(90deg,var(--gold),#ffab2e)", btn.style.color="#1a1400";
+  else btn.style.background="", btn.style.color="";
+  updateExamPreview();
+}
+
+/* ================= VIEWS ================= */
+function goHome(){
+  $("badgesView").style.display="none";
+  $("examView").style.display="none";
+  $("homeView").style.display="";
+  $("hero").style.display="";
+  renderTracks(); renderHud(); window.scrollTo(0,0);
+}
+function showBadges(){
+  $("homeView").style.display="none";
+  $("hero").style.display="none";
+  $("examView").style.display="none";
+  $("badgesView").style.display="";
+  renderBadges(); window.scrollTo(0,0);
+}
+function showExam(){
+  if(!hasDone("L5d")){
+    toast("🔒 Unlocks after Level 5's final mission (Agent Overlord badge).");
+    return;
+  }
+  $("homeView").style.display="none";
+  $("hero").style.display="none";
+  $("badgesView").style.display="none";
+  $("examView").style.display="";
+  renderExam(); window.scrollTo(0,0);
+}
+function renderBadges(){
+  var grid=$("badgeGrid"); grid.innerHTML="";
+  BADGES.forEach(function(b){
+    var earned = S.badges.indexOf(b.id)!==-1;
+    var el=document.createElement("div");
+    el.className="badge"+(earned?" earned":"");
+    el.innerHTML='<div class="bi">'+ic(b.icon,34)+'</div><h4>'+b.name+'</h4><small>'+b.desc+'</small>'+
+      (earned?"<div style='color:var(--gold);font-size:11px;margin-top:6px'>"+ic('check',12)+" Earned</div>":"<div style='color:var(--muted);font-size:11px;margin-top:6px'>"+ic('lock',11)+" Locked</div>");
+    grid.appendChild(el);
+  });
+}
+function updateExamPreview(){}
+
+/* ================= EXAM LOGIC ================= */
+function renderExam(){
+  var body=$("examBody"); body.innerHTML="";
+  if(S.examScore>=0 && !S.examPassed){
+    var retry=document.createElement("div"); retry.className="story";
+    retry.innerHTML=ic('refresh',14)+" Previous best: <b>"+S.examScore+"/10</b>. You need 7+ to earn the certificate — study the levels and retry after you've reviewed everything.";
+    body.appendChild(retry);
+  }
+  var head=document.createElement("div"); head.className="quiz-score"; head.id="examHead"; head.textContent="Answered: 0/"+EXAM.length;
+  body.appendChild(head);
+  var correct={n:0};
+  EXAM.forEach(function(q,i){
+    var box=document.createElement("div");
+    box.className="qq";
+    box.innerHTML='<h5 style="font-size:13.5px">'+(i+1)+'. '+q.q+'</h5>';
+    q.o.forEach(function(o,oi){
+      var btn=document.createElement("button"); btn.className="opt"; btn.style.padding="7px 10px"; btn.style.fontSize="12.5px"; btn.textContent=o;
+      btn.onclick=function(){
+        if(box.dataset.done) return;
+        box.dataset.done="1";
+        var ok=(oi===q.a);
+        if(ok) correct.n++;
+        btn.classList.add(ok?"correct":"wrong");
+        if(!ok) box.querySelectorAll(".opt")[q.a].classList.add("correct");
+        var ex=document.createElement("div"); ex.className="expl"; ex.innerHTML=ic("info",13)+" "+q.e;
+        box.appendChild(ex);
+        var answeredCount=body.querySelectorAll('.qq[data-done]').length;
+        head.textContent="Answered: "+answeredCount+"/"+EXAM.length+" · correct so far: "+correct.n;
+      };
+      box.appendChild(btn);
+    });
+    body.appendChild(box);
+  });
+  var submit=document.createElement("button");
+  submit.className="btn btn-primary"; submit.style.marginTop="10px"; submit.innerHTML=ic('flag',14)+" Submit Exam";
+  submit.onclick=function(){
+    if(correct.n<7){
+      var answeredCount=body.querySelectorAll('.qq[data-done]').length;
+      if(answeredCount<EXAM.length){ toast("Answer all "+EXAM.length+" — so far "+answeredCount+"."); return; }
+      S.examScore=correct.n; S.examPassed=false; save();
+      toast("❌ "+S.examScore+"/10 — review the level notes and retry!");
+      renderExam();
+      window.scrollTo(0,0);
+      return;
+    }
+    S.examScore=correct.n; S.examPassed=true;
+    if(S.badges.indexOf("exam")===-1){
+      S.xp+=250;
+      save();
+      grantBadge("exam");
+      confetti();
+      toast("🎓 PASSED "+correct.n+"/10 — +250 XP! Certificate forged.");
+    } else {
+      save();
+      toast("Retaken — same pass recorded.");
+    }
+    renderExam(); renderBadges && renderCertificates();
+    renderHud();
+  };
+  body.appendChild(submit);
+  renderCertificates();
+}
+function renderCertificates(){
+  var cert=document.querySelector(".cert");
+  if(cert) cert.remove();
+  if(!S.examPassed) return;
+  var r=rankFor(S.xp)[0];
+  var newCert=document.createElement("div");
+  newCert.className="cert show";
+  newCert.innerHTML=
+    '<div class="c-title">certificate of orchestration</div>'+
+    '<h2>'+ic("gradcap",22)+' Certified AI Orchestrator</h2>'+
+    '<input class="name-in" id="certName" placeholder="Type your name" value="'+(S.name||"")+'">'+
+    '<div class="c-name">'+(S.name||"Your Name Here")+'</div>'+
+    '<p>This certifies the bearer has completed all five levels of AI Orchestration — '+
+    'context, projects &amp; skills · connectors to the real world · artifacts &amp; design systems · '+
+    'multi-model superiority · parallel agents on autopilot — scoring <b style="color:var(--text)">'+S.examScore+'/10</b> on the final exam.</p>'+
+    '<div class="xp-final">Rank: <b style="color:var(--acc2)">'+r+'</b> · '+S.xp+' XP · '+ic("flame",13)+' '+S.streak+'-day streak</div>'+
+    '<button class="btn btn-primary" style="margin-top:14px" onclick="window.print()">'+ic("print",14)+' Print / Save as PDF</button>';
+  $("examBody").appendChild(newCert);
+  var input=newCert.querySelector("#certName");
+  input.oninput=function(){
+    S.name=input.value; save();
+    var shown=newCert.querySelector(".c-name");
+    if(shown) shown.textContent=S.name||"Your Name Here";
+  };
+}
+
+/* ================= RESET ================= */
+function resetAll(){
+  if(!confirm("Wipe all XP, badges and lesson progress?")) return;
+  localStorage.removeItem(KEY);
+  S=loadState(); save();
+  toast("Progress reset. Fresh start!");
+  goHome(); renderHud();
+}
+
+/* ================= DATA EXPORT / IMPORT ================= */
+function exportProgress(){
+  var payload={app:"orchestratorAcademy",v:1,exported:new Date().toISOString(),state:S};
+  var url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}));
+  var a=document.createElement("a");
+  a.href=url; a.download="orchestrator-academy-progress-"+today()+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); },400);
+  toast(ic('dl',15)+" Backup downloaded — "+S.done.length+" lessons, "+S.xp+" XP saved",3200);
+}
+function importProgress(inp){
+  var f=inp.files && inp.files[0];
+  inp.value="";
+  if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var o=JSON.parse(rd.result);
+      var st=(o && o.state) ? o.state : o;
+      if(!st || typeof st.xp!=="number" || !Array.isArray(st.done)) throw 0;
+      var bad=st.done.filter(function(x){ return typeof x!=="string"; }).length;
+      if(bad) throw 0;
+      S={
+        xp:Math.max(0,Math.min(totalXpPossible(),Math.round(st.xp))),
+        done:st.done,
+        bestQuiz:(st.bestQuiz && typeof st.bestQuiz==="object") ? st.bestQuiz : {},
+        examScore:(typeof st.examScore==="number") ? st.examScore : -1,
+        examPassed:!!st.examPassed,
+        lastVisit:st.lastVisit || today(),
+        streak:Math.max(1,parseInt(st.streak,10)||1),
+        badges:Array.isArray(st.badges) ? st.badges : [],
+        name:st.name || "",
+        remLast:st.remLast || ""
+      };
+      evaluateBadges();
+      save();
+      goHome();
+      toast(ic('check',15)+" Progress restored — "+S.done.length+" lessons, "+S.xp+" XP, "+S.streak+"-day streak",3400);
+      closeLesson();
+      if(S.done.length>=totalLessonCount()) showExam();
+    }catch(e){
+      toast(ic('x',15)+" That file is not a valid backup");
+    }
+  };
+  rd.readAsText(f);
+}
+
+/* ================= DAILY REMINDER ================= */
+var OA_rem={nudges:0};
+var OA_doneCount=0;
+var OA_idle={lastAct:Date.now()};
+var OA_LINES=[
+  "Small reps beat heroic bursts — one mission is enough.",
+  "The orchestrator skill is a muscle. Show up, rep, close the laptop.",
+  "You do not need motivation. You need a five-minute start.",
+  "Yesterday you learned a tool. Today make it do the work.",
+  "Consistency is the actual cheat code. Grab your mission."
+];
+function nextMission(){
+  for(var i=0;i<TRACKS.length;i++){
+    var ls=TRACKS[i].lessons;
+    for(var j=0;j<ls.length;j++){
+      if(!hasDone(ls[j].id)) return {t:TRACKS[i],l:ls[j]};
+    }
+  }
+  return null;
+}
+function dailyReminder(){
+  var t=today();
+  if(S.remLast===t) return;
+  S.remLast=t; save();
+  var total=totalLessonCount(), left=total-S.done.length;
+  var line=OA_LINES[Math.floor(Math.random()*OA_LINES.length)];
+  var nm=nextMission();
+  if(nm){
+    var isFresh=S.done.length===0;
+    cta(ic('gradcap',15)+" "+(isFresh ? "Welcome, future orchestrator — "+total+" missions await" : "Day "+S.streak+" — "+left+" missions left. "+line), "Resume: "+nm.l.title.slice(0,34), function(){ openLesson(nm.t,nm.l); }, 8000);
+  }else{
+    toast(ic('trophy',15)+" All missions done — take the exam or print your certificate",6000);
+  }
+}
+function initIdleNudge(){
+  var bump=function(){ OA_idle.lastAct=Date.now(); };
+  document.addEventListener("pointerdown",bump);
+  document.addEventListener("keydown",bump);
+  document.addEventListener("visibilitychange",bump);
+  setInterval(function(){
+    if(document.visibilityState!=="visible") return;
+    if(OA_rem.nudges>=2 || OA_doneCount>0) return;
+    if(Date.now()-OA_idle.lastAct < 30*60000) return;
+    OA_rem.nudges++;
+    OA_idle.lastAct=Date.now();
+    var nm=nextMission();
+    if(nm) cta(ic('clock',15)+" Break's over — one mission keeps the streak alive", "Open it", function(){ openLesson(nm.t,nm.l); }, 7000);
+  },60000);
+}
+function floatXp(txt){
+  var el=$("xpVal");
+  if(!el) return;
+  var f=document.createElement("div");
+  f.className="oa-float"; f.textContent=txt;
+  var r=el.getBoundingClientRect();
+  f.style.left=(r.left+r.width/2-12)+"px";
+  f.style.top=(r.top-6)+"px";
+  document.body.appendChild(f);
+  setTimeout(function(){ f.remove(); },1400);
+}
+
+/* ================= INIT ================= */
+function hydrateIcons(){
+  var nodes=document.querySelectorAll("[data-ic]");
+  for(var i=0;i<nodes.length;i++){
+    var el=nodes[i];
+    el.innerHTML=ic(el.getAttribute("data-ic"),parseInt(el.getAttribute("data-sz")||"14",10));
+  }
+}
+function init(){
+  hydrateIcons();
+  renderTracks();
+  renderHud();
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeLesson(); });
+  dailyReminder();
+  initIdleNudge();
+}
+init();
+</script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 ---
 project: Orchestrator Academy
-type: single-file web app
-status: live (v1.3)
+type: single-file web app (PWA)
+status: live (v1.4)
 stack: HTML + vanilla JS + localStorage (zero deps, offline)
 origin: Outskill "AI Orchestration" live workshop transcript
-entry: index.html (double-click to run)
+entry: index.html (double-click to run, or use https://farman024.github.io/Orchestrator-Academy/)
 ---
 
 # Orchestrator Academy
@@ -14,8 +14,14 @@ AI Orchestration workshop into clickable missions. Learn the orchestrator skill 
 read → quiz → earn XP → unlock tracks → pass the final exam → forge your certificate.
 
 ## How to run
-Double-click `index.html`. No server, no install, no internet needed.
-Works in any modern browser. Progress auto-saves to localStorage.
+Double-click `index.html`. No server, no install, no internet needed — or visit the
+live hosted version: **https://farman024.github.io/Orchestrator-Academy/**
+Progress auto-saves to localStorage (per browser origin).
+
+## Install as an app (PWA)
+Open the site in Chrome/Edge → **Install "Orchestrator Academy"** from the address bar
+menu → it becomes a standalone app window with its own icon, and **works fully
+offline** thanks to the service worker cache. Learning never needs a connection.
 
 ## Feature set
 - **29 lessons** across 6 tracks (Bonus warm-up + Levels 1–5), each with read blocks,
@@ -29,6 +35,7 @@ Works in any modern browser. Progress auto-saves to localStorage.
 - **Daily study reminder** — welcome-back CTA toast (opens your next mission directly) + idle nudges while tab is open
 - **SVG icon system** — every icon is inline SVG (57-entry library), no emoji, no CDN
 - **Animations** — staggered cards, XP pop/float, rank-up toast, progress-bar shine, reduced-motion guard
+- **PWA** — installable standalone app (manifest + icons + service worker), offline-ready once opened
 
 ## Data & storage
 | Key | Value |
@@ -47,6 +54,7 @@ Single file — everything (CSS, data, logic) lives in `index.html`:
 - **v1.0 (Oct 31)** — full app from workshop transcript; 29 lessons, exam, certificate, badges
 - **v1.1 (Oct 31)** — emoji → dedicated inline SVG icons everywhere
 - **v1.3 (Nov 1)** — JSON backup/restore, daily study reminder + idle nudges, animation system
+- **v1.4 (Nov 2)** — PWA upgrade (manifest, custom icons, service worker offline cache) + published on **GitHub Pages**
 
 ## Credits
 Based on the flagship **AI Orchestration** live workshop by **Outskill**, hosted by

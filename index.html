@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orchestrator Academy — Learn AI Orchestration, Gamified</title>
+<meta name="theme-color" content="#0b0e14">
+<meta name="description" content="Learn AI Orchestration like a game: 30 missions, XP, ranks, badges, final exam & certificate. Based on the Outskill AI Orchestration workshop. Works fully offline.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
   --bg:#0b0e14; --panel:#131826; --panel2:#1a2133; --line:#252e45;
@@ -1430,6 +1435,11 @@ function init(){
   initIdleNudge();
 }
 init();
+
+/* ================= PWA ================= */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  navigator.serviceWorker.register("sw.js").catch(function(e){ /* offline install unavailable — app still works */ });
+}
 </script>
 </body>
 </html>
